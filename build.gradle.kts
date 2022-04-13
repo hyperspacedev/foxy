@@ -1,8 +1,20 @@
+/*
+ * build.gradle.kts
+ * Copyright (C) 2022 Hyperspace Developers.
+ * This file is part of project Foxy.
+ *
+ * The Foxy project is non-violent software: you can use, redistribute, and/or modify it under the terms of the NPLv7+
+ * as found in the LICENSE file in the source code root directory or at <https://git.pixie.town/thufie/npl-builder>.
+ *
+ * The Foxy project comes with ABSOLUTELY NO WARRANTY, to the extent permitted by applicable law.  See the
+ * NPL for details.
+ */
+
 plugins {
     kotlin("multiplatform") version "1.6.20"
 }
 
-group = "me.marquis"
+group = "dev.hyperspace"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -26,6 +38,7 @@ kotlin {
             }
         }
     }
+
     val hostOs = System.getProperty("os.name")
     val isMingwX64 = hostOs.startsWith("Windows")
     val nativeTarget = when {
@@ -35,9 +48,14 @@ kotlin {
         else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
     }
 
-    
     sourceSets {
-        val commonMain by getting
+        val commonMain by getting {
+            val ktor_version: String by project
+            dependencies {
+                implementation("io.ktor:ktor-client-core:$ktor_version")
+                implementation("io.ktor:ktor-client-cio:$ktor_version")
+            }
+        }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
