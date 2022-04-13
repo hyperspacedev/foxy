@@ -18,11 +18,12 @@ import kotlin.test.assertTrue
 class FoxyIntegrityTests {
 
     private val dummyToken: String = "42cf00-09ba110r-0f2o3o1b9a5r"
+    private fun getTimes(): Pair<String, String> = Pair("2010-06-01T22:19:44.475Z", "2010-06-15T22:20:11.411Z")
 
     /** Test that the integrity stamp creation and validation works. */
     @Test
     fun testChecksum() {
-        val now = "2010-06-01T22:19:44.475Z"
+        val (now, _) = getTimes()
         val validatedSession = ValidatedSession(dummyToken, now)
         validatedSession.setIntegrityStamp(86400)
         assertTrue(
@@ -34,8 +35,7 @@ class FoxyIntegrityTests {
     /** Test that the integrity stamp check fails when fast-forwarding to the future. */
     @Test
     fun testChecksumFailureToValidate() {
-        val now = "2010-06-01T22:19:44.475Z"
-        val future = "2010-06-15T22:20:11.411Z"
+        val (now, future) = getTimes()
 
         val validatedSession = ValidatedSession(dummyToken, now)
         validatedSession.setIntegrityStamp(86400)
@@ -52,15 +52,14 @@ class FoxyIntegrityTests {
     /** Test that the integrity stamp check succeeds when the current date is in the stamp's lifespan. */
     @Test
     fun testChecksumValidInPeriod() {
-        val now = "2010-06-01T22:19:44.475Z"
-        val future = "2010-06-01T22:20:11.411Z"
+        val (now, future) = getTimes()
 
         val validatedSession = ValidatedSession(dummyToken, now)
-        validatedSession.setIntegrityStamp(86400 * 14)
+        validatedSession.setIntegrityStamp(86400 * 30)
 
         val futureSession = ValidatedSession(dummyToken, now, integrity = validatedSession.integrity)
         assertTrue(
-            futureSession.validateIntegrity(86400 * 14, future),
+            futureSession.validateIntegrity(86400 * 30, future),
             "Future within token's lifespan."
         )
     }
