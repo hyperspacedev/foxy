@@ -56,6 +56,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-cio:$ktor_version")
                 implementation("com.goncalossilva:murmurhash:0.4.0")
                 implementation("io.ktor:ktor-client-auth:$ktor_version")
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.2")
             }
         }
         val commonTest by getting {

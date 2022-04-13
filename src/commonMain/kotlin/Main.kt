@@ -9,7 +9,7 @@
  * The Foxy project comes with ABSOLUTELY NO WARRANTY, to the extent permitted by applicable law.  See the
  * NPL for details.
  */
-import Foxy.*
+
 /** Returns a greeting with the supplied name.
  * @param name The person or object that will be greeted.
  */
