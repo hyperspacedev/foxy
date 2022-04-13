@@ -1,5 +1,5 @@
 /*
- * FoxyBaseTests.kt
+ * FoxyAuthTests.kt
  * Copyright (C) 2022 Hyperspace Developers.
  * This file is part of project Foxy.
  *
@@ -10,15 +10,22 @@
  * NPL for details.
  */
 
+import io.ktor.client.statement.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlinx.coroutines.*
+import kotlinx.coroutines.runBlocking
+import kotlin.test.assertNotNull
 
-/** A class hosting all the basic tests for the Foxy library. */
-class FoxyBaseTests {
-
-    /** A simple test to expect "Hello, world!" to be returned from the greeter. */
+class FoxyAuthTests {
     @Test
-    fun testHelloWorld() {
-        assertEquals("Hello, World!", greet("World"))
+    fun testRegistration(){
+        val foxy = Foxy()
+        runBlocking{
+            val result = foxy.makeRequest(url = "mastodon.social", path = "api/v1/timelines/public")
+            assertNotNull(result.bodyAsText())
+            assertEquals(200, result.status.value)
+        }
+        foxy.closeClient()
     }
 }
