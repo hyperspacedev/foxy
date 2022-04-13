@@ -1,5 +1,5 @@
 /*
- * Main.kt
+ * FoxyBaseTests.kt
  * Copyright (C) 2022 Hyperspace Developers.
  * This file is part of project Foxy.
  *
@@ -10,8 +10,16 @@
  * NPL for details.
  */
 
-/** Returns a greeting with the supplied name.
- * @param name The person or object that will be greeted.
- */
-fun greet(name: String): String = "Hello, $name!"
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
+/** A class hosting all the basic tests for the Foxy library. */
+class FoxyBaseTests {
+
+    /** A simple test to expect "Hello, world!" to be returned from the greeter. */
+    @Test
+    fun testHelloWorld() {
+        assertEquals("Hello, World!", greet("World"))
+    }
+
+}
