@@ -3,19 +3,28 @@ import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.auth.*
 import io.ktor.client.plugins.auth.providers.*
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
+import kotlinx.serialization.json.Json
 import models.Application
 import models.Token
 
 data class FoxyApp(val name: String, val website: String?)
 
 
-class Foxy(var domain: String = "https://mastodon.social") {
+class Foxy(var domain: String = "mastodon.social") {
 
     private val scopes = listOf("read", "write", "follow")
     private var appEntity: Application? = null
+    private var session: ValidatedSession? = null
+
+    enum class AuthGrantType(val parameter: String) {
+        ClientCredential("client_credentials"),
+        AuthorizationCode("authorization_code")
+    }
 
     private val client = HttpClient(CIO) {
         install(Auth) {
@@ -30,24 +39,26 @@ class Foxy(var domain: String = "https://mastodon.social") {
                 }
             }
         }
+        install(ContentNegotiation) {
+            json(Json {
+                prettyPrint = true
+                isLenient = true
+            })
+        }
     }
 
-    private suspend fun makeRequest(type: HttpMethod, path: String, params: List<Pair<String, Any>>): HttpResponse {
-        val response: HttpResponse = client.get {
+    private suspend fun makeRequest(type: HttpMethod, path: String, params: List<Pair<String, Any?>>): HttpResponse =
+        client.request {
             url {
                 protocol = URLProtocol.HTTPS
                 host = domain
                 method = type
                 path(path)
             }
-
-            headers {
-                params.forEach { (name, value) -> append(name, value.toString()) }
+            params.forEach { (name, value) ->
+                parameter(name, value)
             }
         }
-
-        return response
-    }
 
     private suspend fun registerApplication(
         instanceDomain: String,
@@ -69,34 +80,49 @@ class Foxy(var domain: String = "https://mastodon.social") {
     suspend fun startOAuthFlow(app: FoxyApp, redirectUri: String): String {
         val fapEntity = registerApplication(domain, app.name, redirectUri, app.website)
             .body<Application>()
+
         appEntity = fapEntity
 
-        val benjamin = scopes.joinToString(" ")
+        val benjamin = scopes.joinToString("%20")
 
         val components = listOf(
-            "$domain/oauth/authorize?response_type=code&client_id=${fapEntity.clientId}",
-            "&client_secret=${fapEntity.clientSecret}&redirect_uri=$redirectUri&scope=$benjamin"
+            "https://$domain/oauth/authorize",
+            "?response_type=code",
+            "&client_id=${fapEntity.clientId}",
+            "&client_secret=${fapEntity.clientSecret}",
+            "&redirect_uri=$redirectUri",
+            "&scope=$benjamin"
         )
 
         return components.joinToString("")
     }
 
-    suspend fun finishOAuthFlow(code: String) {
+    suspend fun finishOAuthFlow(grant: AuthGrantType, code: String = "") {
         val authorizationCode = code.split("code")
+        val redirectUri =
+            if (authorizationCode.count() > 1) authorizationCode[0].removeSuffix("?") else "urn:ietf:wg:oauth:2.0:oob"
 
         val fapEntity = appEntity ?: return
 
         val tokenEntity = makeRequest(
             HttpMethod.Post, "/oauth/token",
-            listOf(
-                Pair("grant_type", "authorization_code"),
-                Pair("client_id", fapEntity.clientId),
-                Pair("client_secret", fapEntity.clientSecret),
-                Pair("redirect_uri", authorizationCode[0].removeSuffix("?")),
-                Pair("code", authorizationCode[1].removePrefix("="))
-            )
+            buildList {
+                addAll(
+                    listOf(
+                        Pair("grant_type", grant.parameter),
+                        Pair("client_id", fapEntity.clientId),
+                        Pair("client_secret", fapEntity.clientSecret),
+                        Pair("redirect_uri", redirectUri)
+                    )
+                )
+
+                if (grant == AuthGrantType.AuthorizationCode)
+                    add(Pair("code", authorizationCode[1].removePrefix("=")))
+
+            }
         ).body<Token>()
 
+        // TODO: Create the validated session here with the shiny new token :^)
         println("MR SQUIIIIIIDWAAAARRRDDD! Your token is ${tokenEntity.accessToken}")
     }
 

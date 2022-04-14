@@ -10,22 +10,42 @@
  * NPL for details.
  */
 
-import io.ktor.client.statement.*
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlinx.coroutines.*
 import kotlinx.coroutines.runBlocking
-import kotlin.test.assertNotNull
+import kotlin.test.*
 
 class FoxyAuthTests {
+
+    private lateinit var client: Foxy
+
+    @BeforeTest
+    fun setup() {
+        client = Foxy()
+        client.domain = "mastodon.social"
+    }
+
+    @AfterTest
+    fun teardown() {
+        client.closeClient()
+    }
+
     @Test
-    fun testRegistration(){
-        val foxy = Foxy()
-        runBlocking{
-            val result = foxy.makeRequest(url = "mastodon.social", path = "api/v1/timelines/public")
-            assertNotNull(result.bodyAsText())
-            assertEquals(200, result.status.value)
+    fun testStartOAuthFlowSucceeds() {
+        val foxyApp = FoxyApp("TestApplication", null)
+        runBlocking {
+            val result = client.startOAuthFlow(foxyApp, "urn:ietf:wg:oauth:2.0:oob")
+            assertNotNull(result)
+            assertTrue(result.isNotBlank())
         }
-        foxy.closeClient()
+    }
+
+    @Test
+    fun testOAuthFlow() {
+        val foxyApp = FoxyApp("TestApplication", null)
+        runBlocking {
+            val result = client.startOAuthFlow(foxyApp, "urn:ietf:wg:oauth:2.0:oob")
+            assertNotNull(result)
+            assertTrue(result.isNotBlank())
+            client.finishOAuthFlow(Foxy.AuthGrantType.ClientCredential, "")
+        }
     }
 }

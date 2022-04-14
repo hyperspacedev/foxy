@@ -12,6 +12,7 @@
 
 plugins {
     kotlin("multiplatform") version "1.6.20"
+    kotlin("plugin.serialization") version "1.6.20"
 }
 
 group = "dev.hyperspace"
@@ -58,6 +59,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-auth:$ktor_version")
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.2")
                 implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
+                implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
             }
         }
         val commonTest by getting {
