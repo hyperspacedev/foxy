@@ -20,7 +20,6 @@ class FoxyAuthTests {
     @BeforeTest
     fun setup() {
         client = Foxy()
-        client.domain = "mastodon.social"
     }
 
     @AfterTest
@@ -32,7 +31,7 @@ class FoxyAuthTests {
     fun testStartOAuthFlowSucceeds() {
         val foxyApp = FoxyApp("TestApplication", null)
         runBlocking {
-            val result = client.startOAuthFlow(foxyApp, "urn:ietf:wg:oauth:2.0:oob")
+            val result = client.startOAuthFlow("mastodon.social", foxyApp, "urn:ietf:wg:oauth:2.0:oob")
             assertNotNull(result)
             assertTrue(result.isNotBlank())
         }
@@ -42,7 +41,7 @@ class FoxyAuthTests {
     fun testOAuthFlow() {
         val foxyApp = FoxyApp("TestApplication", null)
         runBlocking {
-            val result = client.startOAuthFlow(foxyApp, "urn:ietf:wg:oauth:2.0:oob")
+            val result = client.startOAuthFlow("mastodon.social", foxyApp, "urn:ietf:wg:oauth:2.0:oob")
             assertNotNull(result)
             assertTrue(result.isNotBlank())
             client.finishOAuthFlow(Foxy.AuthGrantType.ClientCredential, "")
