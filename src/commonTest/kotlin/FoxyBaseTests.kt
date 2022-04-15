@@ -21,5 +21,4 @@ class FoxyBaseTests {
     fun testHelloWorld() {
         assertEquals("Hello, World!", greet("World"))
     }
-
 }
