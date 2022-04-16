@@ -50,7 +50,7 @@ data class Status(
     val application: Application,
 
     /** Mentions of users within the status content */
-    //val mentions: List<Mention>,
+    val mentions: List<Mention>,
 
     /** Hashtags used within the status content */
     val tags: List<Tag>,
@@ -80,7 +80,7 @@ data class Status(
     val reblog: Status?,
 
     /** The poll attached to the status */
-    // val poll: Poll?
+    val poll: Poll?,
 
     /** Preview card for links included within status content */
     val card: Card?,
