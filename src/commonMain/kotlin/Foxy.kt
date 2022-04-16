@@ -24,22 +24,39 @@ import kotlinx.datetime.Instant
 import kotlinx.serialization.json.Json
 import models.Application
 import models.Token
+import security.ValidatedSession
+import utils.FoxyApp
+import utils.FoxyRequestBuilder
+import kotlin.native.concurrent.ThreadLocal
 import kotlin.time.Duration.Companion.days
 
-data class FoxyApp(val name: String, val website: String?)
+/** The primary HTTP client that will make requests to the Mastodon server. */
+@ThreadLocal
+object Foxy {
 
+    /** The domain to make requests to. */
+    private var domain: String = "mastodon.social"
 
-class Foxy(var domain: String = "mastodon.social") {
+    /** The list of scopes that the client will have control over. */
+    private val scopes: MutableList<String> = mutableListOf("read", "write", "follow")
 
-    private val scopes = listOf("read", "write", "follow")
+    /** The application entity created during authorization. */
     private var appEntity: Application? = null
+
+    /** The client's current session with the access token. */
     private var session: ValidatedSession? = null
 
+    /** An enumeration class describing the different grant methods. */
     enum class AuthGrantType(val parameter: String) {
+
+        /** The client wants to obtain app-level access. */
         ClientCredential("client_credentials"),
+
+        /** The client want to obtain user-level access. */
         AuthorizationCode("authorization_code")
     }
 
+    /** The primary HTTP client agent. */
     private val client = HttpClient(CIO) {
         install(Auth) {
             bearer {
@@ -62,39 +79,33 @@ class Foxy(var domain: String = "mastodon.social") {
         }
     }
 
-    private suspend fun makeRequest(type: HttpMethod, path: String, params: List<Pair<String, Any?>>): HttpResponse =
-        client.request {
-            url {
-                protocol = URLProtocol.HTTPS
-                host = domain
-                method = type
-                path(path)
-            }
-            params.forEach { (name, value) ->
-                parameter(name, value)
-            }
-        }
-
-    private suspend fun registerApplication(
-        instanceDomain: String,
-        clientName: String,
-        redirectUri: String,
-        website: String?
-    ): HttpResponse {
-        domain = instanceDomain
-        return makeRequest(
-            HttpMethod.Post,
-            "/api/v1/apps",
-            listOf(
-                Pair("client_name", clientName),
-                Pair("redirect_uris", redirectUri),
-                Pair("scopes", scopes.joinToString(" ")),
-                Pair("website", website ?: "")
-            )
-        )
+    /** Make an HTTP request to the Mastodon server.
+     * @param builder A receiver closure describing the request to make to the server.
+     * @return The HTTP response for that request.
+     */
+    suspend fun request(builder: FoxyRequestBuilder.() -> Unit): HttpResponse {
+        val request = FoxyRequestBuilder()
+        builder(request)
+        return makeRequest(request.method, request.endpoint, request.getParams())
     }
 
+    /** Sets the instance domain of the client to make requests to.
+     *
+     * This is used if Foxy.startOAuthFlow has not been called.
+     * @param domain The instance's URI, without the HTTP protocol marker.
+     * @see Foxy.startOAuthFlow
+     */
+    fun setInstance(domain: String) {
+        this.domain = domain
+    }
 
+    /** Starts the OAuth authorization process by making a request to the server and fetching the authorization URL.
+     * @param domain The instance's URI, without the HTTP protocol marker.
+     * @param app The application that will be created on the server.
+     * @param redirectUri The URI that the user will be redirected to when authorization is accepted or rejected.
+     * @return The URL that the user will visit to authenticate and autorize the app. This can be ignored if the app is
+     * obtaining app-level access rather than user-level access.
+     */
     suspend fun startOAuthFlow(domain: String, app: FoxyApp, redirectUri: String): String {
         val fapEntity = registerApplication(domain, app.name, redirectUri, app.website)
             .body<Application>()
@@ -115,6 +126,11 @@ class Foxy(var domain: String = "mastodon.social") {
         return components.joinToString("")
     }
 
+    /** Finishes authorization process by retrieveing the access code to create the token and storing it securely.
+     * @param grant The level of access the app will have.
+     * @param code The URL containing the access code needed to obtain an access token. This is unused when only
+     * app-level access is requested.
+     */
     suspend fun finishOAuthFlow(grant: AuthGrantType, code: String = "") {
         val authorizationCode = code.split("code")
         val redirectUri =
@@ -153,7 +169,41 @@ class Foxy(var domain: String = "mastodon.social") {
         )
     }
 
-    fun closeClient() {
+    fun close() {
         client.close()
+    }
+
+    /** Makes a general HTTP request using the domain and access token. */
+    private suspend fun makeRequest(type: HttpMethod, path: String, params: List<Pair<String, Any?>>): HttpResponse =
+        client.request {
+            url {
+                protocol = URLProtocol.HTTPS
+                host = domain
+                method = type
+                path(path)
+            }
+            params.forEach { (name, value) ->
+                parameter(name, value)
+            }
+        }
+
+    /** Registers the application for authorization and use on the server. */
+    private suspend fun registerApplication(
+        instanceDomain: String,
+        clientName: String,
+        redirectUri: String,
+        website: String?
+    ): HttpResponse {
+        domain = instanceDomain
+        return makeRequest(
+            HttpMethod.Post,
+            "/api/v1/apps",
+            listOf(
+                Pair("client_name", clientName),
+                Pair("redirect_uris", redirectUri),
+                Pair("scopes", scopes.joinToString(" ")),
+                Pair("website", website ?: "")
+            )
+        )
     }
 }

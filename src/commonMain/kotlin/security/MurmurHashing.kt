@@ -1,5 +1,5 @@
 /*
- * Main.kt
+ * MurmurHashing.kt
  * Copyright (C) 2022 Hyperspace Developers.
  * This file is part of project Foxy.
  *
@@ -10,7 +10,11 @@
  * NPL for details.
  */
 
-/** Returns a greeting with the supplied name.
- * @param name The person or object that will be greeted.
- */
-fun greet(name: String): String = "Hello, $name!"
+package security
+
+import com.goncalossilva.murmurhash.MurmurHash3
+
+/** Returns a hash of the string using the MurmurHash3 function. */
+fun String.hashedToMurmur(): String = MurmurHash3()
+    .hash32x86(this.encodeToByteArray())
+    .toString()

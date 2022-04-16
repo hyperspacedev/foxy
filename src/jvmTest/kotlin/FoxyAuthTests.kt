@@ -11,27 +11,23 @@
  */
 
 import kotlinx.coroutines.runBlocking
-import kotlin.test.*
+import utils.FoxyApp
+import kotlin.test.AfterTest
+import kotlin.test.Test
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 class FoxyAuthTests {
-
-    private lateinit var client: Foxy
-
-    @BeforeTest
-    fun setup() {
-        client = Foxy()
-    }
-
     @AfterTest
     fun teardown() {
-        client.closeClient()
+        Foxy.close()
     }
 
     @Test
     fun testStartOAuthFlowSucceeds() {
         val foxyApp = FoxyApp("TestApplication", null)
         runBlocking {
-            val result = client.startOAuthFlow("mastodon.social", foxyApp, "urn:ietf:wg:oauth:2.0:oob")
+            val result = Foxy.startOAuthFlow("mastodon.social", foxyApp, "urn:ietf:wg:oauth:2.0:oob")
             assertNotNull(result)
             assertTrue(result.isNotBlank())
         }
@@ -41,10 +37,10 @@ class FoxyAuthTests {
     fun testOAuthFlow() {
         val foxyApp = FoxyApp("TestApplication", null)
         runBlocking {
-            val result = client.startOAuthFlow("mastodon.social", foxyApp, "urn:ietf:wg:oauth:2.0:oob")
+            val result = Foxy.startOAuthFlow("mastodon.social", foxyApp, "urn:ietf:wg:oauth:2.0:oob")
             assertNotNull(result)
             assertTrue(result.isNotBlank())
-            client.finishOAuthFlow(Foxy.AuthGrantType.ClientCredential, "")
+            Foxy.finishOAuthFlow(Foxy.AuthGrantType.ClientCredential, "")
         }
     }
 }
