@@ -1,5 +1,5 @@
 /*
- * FoxyBaseTests.kt
+ * FoxyApp.kt
  * Copyright (C) 2022 Hyperspace Developers.
  * This file is part of project Foxy.
  *
@@ -10,15 +10,14 @@
  * NPL for details.
  */
 
-import kotlin.test.Test
-import kotlin.test.assertEquals
+package utils
 
-/** A class hosting all the basic tests for the Foxy library. */
-class FoxyBaseTests {
+/** A data class that represents an application that will be made on the Mastodon server. */
+data class FoxyApp(
+    /** The name of the application. */
+    val name: String,
 
-    /** A simple test to expect "Hello, world!" to be returned from the greeter. */
-    @Test
-    fun testHelloWorld() {
-        assertEquals("Hello, World!", greet("World"))
-    }
-}
+    /** The URL linking to the application's website. */
+    val website: String?
+)
+
