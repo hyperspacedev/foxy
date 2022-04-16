@@ -12,17 +12,11 @@
 
 import kotlinx.coroutines.runBlocking
 import utils.FoxyApp
-import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class FoxyAuthTests {
-    @AfterTest
-    fun teardown() {
-        Foxy.close()
-    }
-
     @Test
     fun testStartOAuthFlowSucceeds() {
         val foxyApp = FoxyApp("TestApplication", null)
