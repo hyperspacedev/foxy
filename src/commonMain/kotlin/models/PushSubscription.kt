@@ -12,6 +12,8 @@
 
 package models
 
+import kotlinx.serialization.SerialName
+
 /** A data class containing a subscription to the push streaming server.
  *
  * Clients utilizing this must have the "push" scope enabled in their client registration.
@@ -25,7 +27,7 @@ data class PushSubscription(
     val endpoint: String,
 
     /** The instance's VAPID key. */
-    val serverKey: String,
+    @SerialName("server_key") val serverKey: String,
 
     /** The push subscription alert object that the endpoint will listen for. */
     val alerts: PushSubscriptionAlert
