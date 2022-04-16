@@ -7,11 +7,7 @@
 
 name: JVM Tests with Gradle
 
-on:
-  push:
-    branches: [ root ]
-  pull_request:
-    branches: [ root ]
+on: [ push, pull_request ]
 
 permissions:
   contents: read
