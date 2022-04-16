@@ -57,6 +57,7 @@ class Foxy(var domain: String = "mastodon.social") {
             json(Json {
                 prettyPrint = true
                 isLenient = true
+                ignoreUnknownKeys = true
             })
         }
     }
@@ -138,7 +139,7 @@ class Foxy(var domain: String = "mastodon.social") {
 
             }
         ).body<Token>()
-        
+
         session =
             ValidatedSession(
                 tokenEntity.accessToken,
