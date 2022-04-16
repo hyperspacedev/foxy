@@ -33,5 +33,5 @@ data class Notification(
     val account: Account,
 
     /** Status that was the object of the notification, e.g. in mentions, reblogs, favourites, or polls */
-    val status: Status?
+    val status: Status? = null
 )

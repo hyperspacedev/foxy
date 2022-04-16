@@ -68,28 +68,28 @@ data class Status(
     @SerialName("replies_count") val repliesCount: Double,
 
     /** A link to the status's HTML representation */
-    val url: String?,
+    val url: String? = null,
 
     /** ID of the status being replied */
-    @SerialName("in_reply_to_id") val inReplyToId: String?,
+    @SerialName("in_reply_to_id") val inReplyToId: String? = null,
 
     /** ID of the account being replied to */
-    @SerialName("in_reply_to_account_id") val inReplyToAccountId: String?,
+    @SerialName("in_reply_to_account_id") val inReplyToAccountId: String? = null,
 
     /** The status being reblogged */
-    val reblog: Status?,
+    val reblog: Status? = null,
 
     /** The poll attached to the status */
-    val poll: Poll?,
+    val poll: Poll? = null,
 
     /** Preview card for links included within status content */
-    val card: Card?,
+    val card: Card? = null,
 
     /** Primary language of this status. ISO 639 Part 1 two-letter language code */
-    val language: String?,
+    val language: String? = null,
 
     /** Plain-text source of a status. Returned instead of content when status is deleted, so the user may redraft from the source text without the client having to reverse-engineer the original text from the HTML content. */
-    val text: String?,
+    val text: String? = null,
 
     /** Did a user favourite this status? */
     val fovourited: Boolean,
@@ -104,5 +104,5 @@ data class Status(
     val bookmarked: Boolean,
 
     /** Did a user pin this status? Only appears if the status is pinnable */
-    val pinned: Boolean?
+    val pinned: Boolean? = null
 )

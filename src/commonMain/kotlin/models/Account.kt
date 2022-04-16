@@ -74,21 +74,21 @@ data class Account(
     @SerialName("following_count") val followingCount: Double,
 
     /** Indicates that the profile is currently inactive and that its user has moved to a new account */
-    val moved: Account?,
+    val moved: Account? = null,
 
     /** Additional metadata attached to a profile as name-value pairs */
-    val fields: List<Field>?,
+    val fields: List<Field>? = null,
 
     /** A presentational flag. Indicates that the account may perform automated actions, may not be monitored, or identifies as a robot */
-    val bot: Boolean?,
+    val bot: Boolean? = null,
 
     /** An extra entity to be used with API methods to verify credentials and update credentials */
-    val source: Source?,
+    val source: Source? = null,
 
     /** An extra entity returned when an account is suspended */
-    val suspended: Boolean?,
+    val suspended: Boolean? = null,
 
     /** When a timed mute will expire, if applicable */
-    @SerialName("mute_expires_at") val muteExpiresAt: String?
+    @SerialName("mute_expires_at") val muteExpiresAt: String? = null
 )
 

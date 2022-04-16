@@ -32,7 +32,7 @@ data class Filter(
     val context: List<String>,
 
     /** An ISO-8601 string containing the date that filter expires, if it is set to expire. */
-    @SerialName("expires_at") val expiresAt: String?,
+    @SerialName("expires_at") val expiresAt: String? = null,
 
     /** Whether matching entities should be dropped entirely from the server in home and notifications. */
     val irreversible: Boolean,

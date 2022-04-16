@@ -33,7 +33,7 @@ data class Attachment(
     @SerialName("preview_url") val previewUrl: String,
 
     /** The URL linking to the attachment's remote URL, if it wasn't loaded from the server itself. */
-    @SerialName("remote_url") val remoteUrl: String?,
+    @SerialName("remote_url") val remoteUrl: String? = null,
 
     /** The shorter text URL to the attachment.
      *
@@ -43,11 +43,11 @@ data class Attachment(
     @SerialName("text_url") val textUrl: String,
 
     /** The alternate text for this attachment. */
-    val description: String?,
+    val description: String? = null,
 
     /** The blur hash used for creating blurred images.
      *
      * This is typically used for images with content warnings attached to them.
      */
-    val blurhash: String?
+    val blurhash: String? = null
 )
