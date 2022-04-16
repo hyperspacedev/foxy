@@ -83,7 +83,7 @@ data class Account(
     val bot: Boolean?,
 
     /** An extra entity to be used with API methods to verify credentials and update credentials */
-    //val source: Source?,
+    val source: Source?,
 
     /** An extra entity returned when an account is suspended */
     val suspended: Boolean?,
