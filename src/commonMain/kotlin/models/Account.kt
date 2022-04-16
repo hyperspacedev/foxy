@@ -77,7 +77,7 @@ data class Account(
     val moved: Account?,
 
     /** Additional metadata attached to a profile as name-value pairs */
-    //val fields: List<Field>?,
+    val fields: List<Field>?,
 
     /** A presentational flag. Indicates that the account may perform automated actions, may not be monitored, or identifies as a robot */
     val bot: Boolean?,
