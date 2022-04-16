@@ -14,8 +14,6 @@ package models
 
 import kotlinx.serialization.Serializable
 
-// FIXME: Remove this once Status is implemented. This is here to make the compiler happy.
-typealias Status = String
 
 /** A data class that represents contextual information pertaining to a specific status. */
 @Serializable
