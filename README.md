@@ -94,7 +94,8 @@ endpoint, you can declare it, provided that you opt in to the `Dangerous` annota
 // The Dangerous annotation requires opt-in to acknowledge that you are aware of the unintended side effects of using
 // the method in question.
 @OptIn(Dangerous::class)
-fun getFreddy(): Animatronic? = Foxy.request<Animatronic> {
+suspend fun getFreddy(): Animatronic? =
+    Foxy.request<Animatronic> {
         method = HttpMethod.Get
         customEndpoint("/api/v2/animatronics/1") // This is the @Dangerous annotated method.
     }.hoistEntityOrNull()
