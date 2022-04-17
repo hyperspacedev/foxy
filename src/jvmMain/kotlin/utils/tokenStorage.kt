@@ -21,7 +21,6 @@ actual fun tokenStorageWrite(data: String) {
 
     val file = File(getAbsolutePath())
 
-    file.parentFile.createNewFile()
     file.createNewFile()
 
     file.bufferedWriter().use { out ->
