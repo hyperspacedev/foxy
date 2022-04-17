@@ -30,5 +30,5 @@ data class Field(
      * This is typically used to display when an account has verified that they own the domain/website in the value
      * field.
      */
-    @SerialName("verified_at") val verifiedAt: String?
+    @SerialName("verified_at") val verifiedAt: String? = null
 )

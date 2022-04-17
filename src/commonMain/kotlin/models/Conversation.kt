@@ -29,5 +29,5 @@ data class Conversation(
     val unread: Boolean,
 
     /** The last status in the conversation thread. */
-    @SerialName("last_status") val lastStatus: Status?
+    @SerialName("last_status") val lastStatus: Status? = null
 )

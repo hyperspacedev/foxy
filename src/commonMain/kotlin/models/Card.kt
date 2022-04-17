@@ -30,39 +30,39 @@ data class Card(
     val type: String,
 
     /** The name of the author that created the content. */
-    @SerialName("author_name") val authorName: String?,
+    @SerialName("author_name") val authorName: String? = null,
 
     /** The URL linking to the author that created the content. */
-    @SerialName("author_url") val authorUrl: String?,
+    @SerialName("author_url") val authorUrl: String? = null,
 
     /** The name of the provider of the content. */
-    @SerialName("provider_name") val providerName: String?,
+    @SerialName("provider_name") val providerName: String? = null,
 
     /** The URL linking to the provider that provides the content. */
-    @SerialName("provider_url") val providerUrl: String?,
+    @SerialName("provider_url") val providerUrl: String? = null,
 
     /** Embeddable HTML code to generate the preview. */
-    val html: String?,
+    val html: String? = null,
 
     /** The card's width expressed as a Double. */
-    val width: Double?,
+    val width: Double? = null,
 
     /** The card's height expressed as a Double. */
-    val height: Double?,
+    val height: Double? = null,
 
     /** The URL linking to the preview image of the card. */
-    val image: String?,
+    val image: String? = null,
 
     /** The URL linking to the embedded content for the preview.
      *
      * This is typically used in place of the Card.html property for photo embeds.
      * @see Card.html
      */
-    @SerialName("embed_url") val embedUrl: String?,
+    @SerialName("embed_url") val embedUrl: String? = null,
 
     /** The blur hash used for creating blurred images.
      *
      * This is typically used for images with content warnings attached to them.
      */
-    val blurhash: String?
+    val blurhash: String? = null
 )

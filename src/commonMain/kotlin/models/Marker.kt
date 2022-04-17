@@ -21,6 +21,7 @@ data class Marker(
 
     /** Information about the user's position in the home timeline */
     val home: MarkerHash,
+
     /**  Information about the user's position in their notifications */
     val notifications: MarkerHash
 

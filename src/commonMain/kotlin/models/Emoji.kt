@@ -32,5 +32,5 @@ data class Emoji(
     @SerialName("visible_in_picker") val visibleInPicker: Boolean,
 
     /** The category this emoji is associated with, if one has been defined. */
-    val category: String?
+    val category: String? = null
 )

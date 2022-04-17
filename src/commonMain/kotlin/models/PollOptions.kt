@@ -21,6 +21,7 @@ data class PollOptions(
 
     /** The text value of the poll option  */
     val title: String,
+
     /** The number of received votes for this option. Number, or null if results are not published yet */
-    @SerialName("votes_count") val votesCount: Double?
+    @SerialName("votes_count") val votesCount: Double? = null
 )
