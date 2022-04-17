@@ -1,5 +1,5 @@
 /*
- * Tag.kt
+ * tokenStorage.kt
  * Copyright (C) 2022 Hyperspace Developers.
  * This file is part of project Foxy.
  *
@@ -10,20 +10,13 @@
  * NPL for details.
  */
 
-package models
+package utils
 
-import kotlinx.serialization.Serializable
+actual fun tokenStorageWrite(data: String) {
+    TODO("Implement kotlin native token storage")
+}
 
-/** A data class representing a hashtag used in statuses and announcements. */
-@Serializable
-data class Tag(
+actual fun tokenStorageGet(): String {
 
-    /** The name of the tag. */
-    val name: String,
-
-    /** A URL linking to a public page displaying statuses with this tag. */
-    val url: String,
-
-    /** A list of usage statistics for this tag. */
-    val history: List<History>? = null
-)
+    TODO("Implement kotlin native token storage")
+}

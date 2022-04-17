@@ -1,5 +1,5 @@
 /*
- * Tag.kt
+ * tokenStorage.kt
  * Copyright (C) 2022 Hyperspace Developers.
  * This file is part of project Foxy.
  *
@@ -10,20 +10,16 @@
  * NPL for details.
  */
 
-package models
+package utils
 
-import kotlinx.serialization.Serializable
+import kotlinx.browser.localStorage
+import org.w3c.dom.get
 
-/** A data class representing a hashtag used in statuses and announcements. */
-@Serializable
-data class Tag(
+actual fun tokenStorageWrite(data: String) {
+    localStorage.setItem("foxyToken", data)
 
-    /** The name of the tag. */
-    val name: String,
+}
 
-    /** A URL linking to a public page displaying statuses with this tag. */
-    val url: String,
-
-    /** A list of usage statistics for this tag. */
-    val history: List<History>? = null
-)
+actual fun tokenStorageGet(): String {
+    return localStorage["foxyToken"] ?: "No Token"
+}

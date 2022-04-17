@@ -17,6 +17,8 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class FoxyAuthTests {
+
+    /** Test that the OAuth starting point succeeds in creating an application entity. */
     @Test
     fun testStartOAuthFlowSucceeds() {
         val foxyApp = FoxyApp("TestApplication", null)
@@ -27,11 +29,24 @@ class FoxyAuthTests {
         }
     }
 
+    /** Test that the OAuth flow works as intended using client credentials. */
     @Test
     fun testOAuthFlow() {
-        val foxyApp = FoxyApp("TestApplication", null)
         runBlocking {
-            val result = Foxy.startOAuthFlow("mastodon.social", foxyApp, "urn:ietf:wg:oauth:2.0:oob")
+            val result = Foxy.startOAuthFlow {
+                instance = "mastodon.social"
+                redirectUri = "urn:ietf:wg:oauth:2.0:oob"
+
+                appName("Foxy Unit Testing")
+                appWebsite("https://github.com/hyperspacedev/foxy")
+
+                scopes {
+                    add("read")
+                    add("write")
+                    add("follow")
+                    add("push")
+                }
+            }
             assertNotNull(result)
             assertTrue(result.isNotBlank())
             Foxy.finishOAuthFlow(Foxy.AuthGrantType.ClientCredential, "")
