@@ -15,9 +15,38 @@ package utils.requests
 /** A sealed class that represents the different account scopes available to the request builder. */
 sealed class FoxyAccountScope {
 
+    enum class Statistics(val endpointName: String) {
+        Statuses("statuses"),
+        Following("following"),
+        Followers("followers"),
+        FeaturedTags("featured_tags"),
+        Lists("lists"),
+        IdentityProofs("identity_proofs")
+    }
+
+    enum class Actions(val endpointName: String) {
+        Follow("follow"),
+        Block("block"),
+        Mute("mute"),
+        Pin("pin")
+    }
+
     /** The current user. */
-    class CurrentUser() : FoxyAccountScope()
+    object CurrentUser : FoxyAccountScope()
+
+    object Register : FoxyAccountScope()
+
+    object Relationships : FoxyAccountScope()
+
+    object UpdateCurrentUser : FoxyAccountScope()
+
+    object Search : FoxyAccountScope()
 
     /** An account with a specified ID. */
     class Account(val id: String) : FoxyAccountScope()
+    class AccountStatistic(val statistics: Statistics, val id: String) : FoxyAccountScope()
+    class AccountAction(val action: Actions, val id: String) : FoxyAccountScope()
+    class UndoAccountAction(val action: Actions, val id: String) : FoxyAccountScope()
+
+    class AccountNote(val id: String) : FoxyAccountScope()
 }
