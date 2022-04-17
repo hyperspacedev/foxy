@@ -29,6 +29,12 @@ class FoxyRequestBuilder(
     private val params: MutableList<Parameter> = mutableListOf()
 ) {
 
+    /** Returns the endpoint that was requested. */
+    fun getEndpoint(): String = endpoint
+
+    /** Returns a list of the parameters to be passed into the client's request. */
+    fun getParams(): List<Parameter> = params.toList()
+
     /** Sets the endpoint to a custom string.
      *
      * This should only be used if the existing endpoint methods do not provide the endpoint requested.
@@ -90,10 +96,22 @@ class FoxyRequestBuilder(
         params.addAll(newParameters.toList())
     }
 
-    /** Returns the endpoint that was requested. */
-    fun getEndpoint(): String = endpoint
+    /** Sets the endpoint to a status-related action.
+     *
+     * @param scope The status scope endpoint to set.
+     * @see FoxyStatusScope
+     */
+    fun status(scope: FoxyStatusScope) {
+        endpoint = "/api/v1/statuses" + when (scope) {
+            is FoxyStatusScope.Editor -> ""
+            is FoxyStatusScope.Status -> "/${scope.id}"
+            is FoxyStatusScope.Context -> "/${scope.statusId}/context"
+            is FoxyStatusScope.FavoritedBy -> "/${scope.statusId}/favourited_by"
+            is FoxyStatusScope.RebloggedBy -> "/${scope.statusId}/reblogged_by"
+            is FoxyStatusScope.Action -> "/${scope.id}/${scope.action.endpointName}"
+            is FoxyStatusScope.UndoAction -> "/${scope.id}/un${scope.action.endpointName}"
 
-    /** Returns a list of the parameters to be passed into the client's request. */
-    fun getParams(): List<Parameter> = params.toList()
+        }
+    }
 
 }
