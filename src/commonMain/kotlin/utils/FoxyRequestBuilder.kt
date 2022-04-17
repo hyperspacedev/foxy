@@ -21,7 +21,7 @@ class FoxyRequestBuilder(
     var method: HttpMethod = HttpMethod.Get,
 
     /** The specified endpoint to make a request to. */
-    var endpoint: String = "",
+    private var endpoint: String = "",
 
     /** A mutable list of the request parameters. */
     private val params: MutableList<Pair<String, Any>> = mutableListOf()
@@ -35,7 +35,7 @@ class FoxyRequestBuilder(
 
         /** The local timeline of the instance or the public timeline.
          *
-         * Note that when this endpoint is chosen, to make a reuqest for a local timeline, the local parameter must be
+         * Note that when this endpoint is chosen, to make a request for a local timeline, the local parameter must be
          * added to the request: `parameter("local", true)`.
          */
         Network("/api/v1/timelines/public"),
@@ -49,8 +49,21 @@ class FoxyRequestBuilder(
         User("/api/v1/verify_credentials")
     }
 
+    fun customEndpoint(path: String) {
+        endpoint = path
+    }
+
     fun info(infoScope: InformationScope) {
         endpoint = infoScope.path
+    }
+
+    /** Adds a parameter to the list of request parameters.
+     *
+     * @param key The parameter's key.
+     * @param value The value of the parameter.
+     */
+    fun parameter(key: String, value: Any) {
+        params.add(Pair(key, value))
     }
 
     /** Sets the endpoint to fetch a timeline.
@@ -62,14 +75,8 @@ class FoxyRequestBuilder(
         endpoint = scope.path
     }
 
-    /** Adds a parameter to the list of request parameters.
-     *
-     * @param key The parameter's key.
-     * @param value The value of the parameter.
-     */
-    fun parameter(key: String, value: Any) {
-        params.add(Pair(key, value))
-    }
+    /** Returns the endpoint that was requested. */
+    fun getEndpoint(): String = endpoint
 
     /** Returns a list of the parameters to be passed into the client's request. */
     fun getParams(): List<Pair<String, Any>> = params.toList()
