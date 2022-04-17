@@ -34,9 +34,32 @@ val authUrl = Foxy.startOAuthFlow(
 
 ```
 
-The authentication URL will be returned, which can be opened in a web browser to allow an end user to sign in and
-authorize the app you created access to your account. To finish the workflow, call `finishOAuthFlow`, specifying
-how to grant permission, along with the redirect URL that contains the code needed to create the access token:
+Alternatively, you can use the `FoxyAuthBuilder` approach:
+
+```kotlin
+import dev.hyperspace.foxy.Foxy
+
+// The authentication URL is returned here.
+val authUrl = Foxy.startOAuthFlow {
+    instance = "mastodon.social"
+    redirectUri = "https://example.com/oauth"
+
+    appName("My Great Mastodon App")
+    appWebsite("https://mastodon.example")
+
+    scopes {
+        add("read")
+        add("write")
+        add("follow")
+    }
+}
+
+```
+
+The authentication URL will be returned in either approach, which can be opened in a web browser to allow an end user to
+sign in and authorize the app you created access to your account. To finish the workflow, call `finishOAuthFlow`,
+specifying how to grant permission, along with the redirect URL that contains the code needed to create the access
+token:
 
 ```kotlin
 // We don't want user-level access in this example, so ClientCredentials will do.
