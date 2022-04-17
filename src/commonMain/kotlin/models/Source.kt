@@ -28,15 +28,15 @@ class Source(
     val fields: List<Field>,
 
     /** The default post privacy to be used for new statuses */
-    val privacy: String?,
+    val privacy: String? = null,
 
     /** Whether new statuses should be marked sensitive by default */
-    val sensitive: Boolean?,
+    val sensitive: Boolean? = null,
 
     /** The default posting language for new statuses */
-    val language: String?,
+    val language: String? = null,
 
     /** The number of pending follow requests */
-    @SerialName("follow_requests_count") val followRequestsCount: String?
+    @SerialName("follow_requests_count") val followRequestsCount: String? = null
 
 )

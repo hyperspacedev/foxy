@@ -20,14 +20,23 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Preferences(
 
-    /** Default visibility for new posts. Equivalent to Source#privacy */
+    /** Default visibility for new posts. Equivalent to Source#privacy
+     *
+     * @see Source.privacy
+     */
     @SerialName("posting:default:visibility") val defaultVisibility: String,
 
-    /** Default sensitivity flag for new posts. Equivalent to Source#sensitive */
+    /** Default sensitivity flag for new posts. Equivalent to Source#sensitive
+     *
+     * @see Source.sensitive
+     */
     @SerialName("posting:default:sensitive") val defaultSensitivity: Boolean,
 
-    /** Default language for new posts. Equivalent to Source#language */
-    @SerialName("posting:default:language") val defaultLanguage: String?,
+    /** Default language for new posts. Equivalent to Source#language
+     *
+     * @see Source.language
+     */
+    @SerialName("posting:default:language") val defaultLanguage: String? = null,
 
     /** Whether media attachments should be automatically displayed or blurred/hidden */
     @SerialName("reading:expand:media") val expandMedia: String,
