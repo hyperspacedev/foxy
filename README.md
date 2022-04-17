@@ -84,7 +84,7 @@ val response = Foxy.request<Timeline> {
     method = HttpMethod.Get
 
     // Set the endpoint to the home timeline endpoint
-    timeline(FoxyTimelineScope.Home())
+    getTimeline(FoxyTimelineScope.Home())
 
     // Specify request parameters with either parameter(key, value) or parameters(builder)
     parameter("limit", 10)
