@@ -15,6 +15,7 @@ import kotlinx.coroutines.runBlocking
 import models.Account
 import models.Activity
 import models.Instance
+import models.Status
 import utils.aliases.Timeline
 import utils.requests.FoxyAccountScope
 import utils.requests.FoxyInstanceScope
@@ -76,6 +77,23 @@ class FoxyRequestTests {
 
             assertNotNull(account, "Entity response should've been hoisted correctly.")
             assertTrue(account.id == "1", "Account IDs don't match.")
+        }
+    }
+
+    /** Test that an account statistic can be fetched correctly. */
+    @Test
+    fun testFetchAccountStats() {
+        runBlocking {
+            val accountResponse = Foxy.request<List<Status>> {
+                method = HttpMethod.Get
+                account(FoxyAccountScope.AccountStatistic(FoxyAccountScope.Statistics.Statuses, "1"))
+            }
+
+            assertTrue(accountResponse !is MastodonResponse.Error, "Response should have succeeded.")
+            val statuses = accountResponse.hoistEntityOrNull()
+
+            assertNotNull(statuses, "Entity response should've been hoisted correctly.")
+            assertTrue(statuses.isNotEmpty(), "List of statuses should not be empty.")
         }
     }
 
