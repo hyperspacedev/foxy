@@ -16,6 +16,7 @@ import kotlinx.datetime.toInstant
 import kotlin.experimental.xor
 
 /** A class that represents a validated session with an integrity timestamp. */
+
 class ValidatedSession(val token: String, val timestamp: String, var integrity: String = "") {
 
     /** Set the integrity stamp of this session, if no integrity stamp has been generated.
