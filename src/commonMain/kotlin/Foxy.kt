@@ -26,6 +26,7 @@ import models.Application
 import models.Token
 import security.ValidatedSession
 import utils.FoxyApp
+import utils.FoxyAuthBuilder
 import utils.FoxyRequestBuilder
 import utils.responses.MastodonResponse
 import kotlin.native.concurrent.ThreadLocal
@@ -111,13 +112,18 @@ object Foxy {
      * @return The URL that the user will visit to authenticate and authorize the app. This can be ignored if the app is
      * obtaining app-level access rather than user-level access.
      */
-    suspend fun startOAuthFlow(domain: String, app: FoxyApp, redirectUri: String): String {
+    suspend fun startOAuthFlow(
+        domain: String,
+        app: FoxyApp,
+        redirectUri: String,
+        customScopes: List<String>? = null
+    ): String {
         val fapEntity = registerApplication(domain, app.name, redirectUri, app.website)
             .body<Application>()
 
         appEntity = fapEntity
 
-        val benjamin = scopes.joinToString("%20")
+        val benjamin = customScopes?.joinToString("%20") ?: scopes.joinToString("%20")
 
         val components = listOf(
             "https://$domain/oauth/authorize",
@@ -129,6 +135,22 @@ object Foxy {
         )
 
         return components.joinToString("")
+    }
+
+    /** Starts the OAuth authorization process by making a request to the server and fetching the authorization URL.
+     * @param builder A receiver closure that builds an authentication request.
+     * @return The URL that the user will visit to authenticate and authorize the app. This can be ignored if the app is
+     * obtaining app-level access rather than user-level access.
+     */
+    suspend fun startOAuthFlow(builder: FoxyAuthBuilder.() -> Unit): String {
+        val foxyAuthBuilder = FoxyAuthBuilder(domain, "urn:ietf:wg:oauth:2.0:oob")
+        builder(foxyAuthBuilder)
+        return startOAuthFlow(
+            foxyAuthBuilder.instance,
+            foxyAuthBuilder.getApp(),
+            foxyAuthBuilder.redirectUri,
+            foxyAuthBuilder.getScopes()
+        )
     }
 
     /** Finishes authorization process by retrieving the access code to create the token and storing it securely.
