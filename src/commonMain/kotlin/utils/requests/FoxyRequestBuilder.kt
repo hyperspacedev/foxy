@@ -28,10 +28,6 @@ class FoxyRequestBuilder(
     /** A mutable list of the request parameters. */
     private val params: MutableList<Parameter> = mutableListOf()
 ) {
-    enum class InformationScope(val path: String) {
-        Instance("/api/v1/instance"),
-        User("/api/v1/verify_credentials")
-    }
 
     /** Sets the endpoint to a custom string.
      *
@@ -42,14 +38,28 @@ class FoxyRequestBuilder(
         endpoint = path
     }
 
-    fun getGeneralInfo(infoScope: InformationScope) {
-        endpoint = infoScope.path
+    /** Sets the endpoint to fetch account information.
+     *
+     * @param scope The user account to fetch in question.
+     * @see FoxyAccountScope
+     */
+    fun getAccount(scope: FoxyAccountScope) {
+        endpoint = when (scope) {
+            is FoxyAccountScope.CurrentUser -> "/api/v1/verify_credentials"
+            is FoxyAccountScope.Account -> "/api/v1/accounts/${scope.id}"
+        }
+    }
+
+    /** Sets the endpoint to retrieve the instance information. */
+
+    fun getInstance() {
+        endpoint = "/api/v1/instance"
     }
 
     /** Sets the endpoint to fetch a timeline.
      *
      * @param scope The timeline to fetch
-     * @see TimelineScope
+     * @see FoxyTimelineScope
      * */
     fun getTimeline(scope: FoxyTimelineScope) {
         endpoint = when (scope) {

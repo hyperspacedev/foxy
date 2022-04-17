@@ -12,9 +12,10 @@
 
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
+import models.Account
 import models.Instance
 import utils.aliases.Timeline
-import utils.requests.FoxyRequestBuilder
+import utils.requests.FoxyAccountScope
 import utils.requests.FoxyTimelineScope
 import utils.responses.MastodonResponse
 import utils.responses.hoistEntityOrNull
@@ -32,7 +33,7 @@ class FoxyRequestTests {
         runBlocking {
             val instanceResponse = Foxy.request<Instance> {
                 method = HttpMethod.Get
-                getGeneralInfo(FoxyRequestBuilder.InformationScope.Instance)
+                getInstance()
             }
 
             assertTrue(instanceResponse !is MastodonResponse.Error, "Response should have succeeded.")
@@ -40,6 +41,23 @@ class FoxyRequestTests {
 
             assertNotNull(instance, "Entity response should've been hoisted correctly.")
             assertTrue(instance.uri == "mastodon.social", "Instance URIs don't match.")
+        }
+    }
+
+    /** Test that an account can be fetched correctly. */
+    @Test
+    fun testFetchAccount() {
+        runBlocking {
+            val accountResponse = Foxy.request<Account> {
+                method = HttpMethod.Get
+                getAccount(FoxyAccountScope.Account("1"))
+            }
+
+            assertTrue(accountResponse !is MastodonResponse.Error, "Response should have succeeded.")
+            val account = accountResponse.hoistEntityOrNull()
+
+            assertNotNull(account, "Entity response should've been hoisted correctly.")
+            assertTrue(account.id == "1", "Account IDs don't match.")
         }
     }
 

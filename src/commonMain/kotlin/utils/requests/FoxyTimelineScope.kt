@@ -12,11 +12,24 @@
 
 package utils.requests
 
+/** A sealed class that represents the different timeline scopes that the request builder has access to. */
 sealed class FoxyTimelineScope {
+
+    /** The home timeline. Requires authentication. */
     object Home : FoxyTimelineScope()
+
+    /** The public or local timelines.
+     *
+     * Requires authentication if the instance has disabled public access to this API. */
     object Network : FoxyTimelineScope()
+
+    /** The direct messages timeline. Requires authentication. */
     object Conversations : FoxyTimelineScope()
+
+    /** A list with a specified ID. Requires authentication. */
     class List(val id: String) : FoxyTimelineScope()
+
+    /** A timeline with statuses containing a specific hashtag. */
     class Tagged(val tag: String) : FoxyTimelineScope()
 
 }
