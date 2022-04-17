@@ -33,7 +33,7 @@ class FoxyRequestTests {
         runBlocking {
             val instanceResponse = Foxy.request<Instance> {
                 method = HttpMethod.Get
-                getInstance()
+                instance()
             }
 
             assertTrue(instanceResponse !is MastodonResponse.Error, "Response should have succeeded.")
@@ -50,7 +50,7 @@ class FoxyRequestTests {
         runBlocking {
             val accountResponse = Foxy.request<Account> {
                 method = HttpMethod.Get
-                getAccount(FoxyAccountScope.Account("1"))
+                account(FoxyAccountScope.Account("1"))
             }
 
             assertTrue(accountResponse !is MastodonResponse.Error, "Response should have succeeded.")
@@ -68,7 +68,7 @@ class FoxyRequestTests {
             val timelineResponse = Foxy.request<Timeline> {
                 method = HttpMethod.Get
 
-                getTimeline(FoxyTimelineScope.Home)
+                timeline(FoxyTimelineScope.Home)
                 parameter("local", true)
             }
 

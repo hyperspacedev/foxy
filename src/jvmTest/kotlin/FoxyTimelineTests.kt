@@ -48,7 +48,7 @@ class FoxyTimelineTests {
             val timelineResponse = Foxy.request<Timeline> {
                 method = HttpMethod.Get
 
-                getTimeline(FoxyTimelineScope.Network)
+                timeline(FoxyTimelineScope.Network)
                 parameter("local", true)
             }
 
@@ -75,7 +75,7 @@ class FoxyTimelineTests {
 
             val timelineResponse = Foxy.request<Timeline> {
                 method = HttpMethod.Get
-                getTimeline(FoxyTimelineScope.Tagged("cat"))
+                timeline(FoxyTimelineScope.Tagged("cat"))
             }
 
             assertTrue(timelineResponse !is MastodonResponse.Error, "Response should have succeeded.")

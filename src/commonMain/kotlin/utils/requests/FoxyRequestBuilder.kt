@@ -35,6 +35,18 @@ class FoxyRequestBuilder(
     /** Returns a list of the parameters to be passed into the client's request. */
     fun getParams(): List<Parameter> = params.toList()
 
+    /** Sets the endpoint to fetch account information.
+     *
+     * @param scope The user account to fetch in question.
+     * @see FoxyAccountScope
+     */
+    fun account(scope: FoxyAccountScope) {
+        endpoint = when (scope) {
+            is FoxyAccountScope.CurrentUser -> "/api/v1/verify_credentials"
+            is FoxyAccountScope.Account -> "/api/v1/accounts/${scope.id}"
+        }
+    }
+
     /** Sets the endpoint to a custom string.
      *
      * This should only be used if the existing endpoint methods do not provide the endpoint requested.
@@ -44,36 +56,23 @@ class FoxyRequestBuilder(
         endpoint = path
     }
 
-    /** Sets the endpoint to fetch account information.
-     *
-     * @param scope The user account to fetch in question.
-     * @see FoxyAccountScope
-     */
-    fun getAccount(scope: FoxyAccountScope) {
-        endpoint = when (scope) {
-            is FoxyAccountScope.CurrentUser -> "/api/v1/verify_credentials"
-            is FoxyAccountScope.Account -> "/api/v1/accounts/${scope.id}"
-        }
-    }
-
     /** Sets the endpoint to retrieve the instance information. */
-
-    fun getInstance() {
+    fun instance() {
         endpoint = "/api/v1/instance"
     }
 
-    /** Sets the endpoint to fetch a timeline.
+    /** Sets the endpoint to a notification-related action.
      *
-     * @param scope The timeline to fetch
-     * @see FoxyTimelineScope
-     * */
-    fun getTimeline(scope: FoxyTimelineScope) {
-        endpoint = when (scope) {
-            is FoxyTimelineScope.Home -> "/api/v1/timelines/home"
-            is FoxyTimelineScope.Network -> "/api/v1/timelines/public"
-            is FoxyTimelineScope.Conversations -> "/api/v1/conversations"
-            is FoxyTimelineScope.List -> "/api/v1/timelines/list/${scope.id}"
-            is FoxyTimelineScope.Tagged -> "/api/v1/timelines/tag/${scope.tag}"
+     * Note that this does required authenticated access at a user level.
+     * @param scope The notification scope endpoint to fetch.
+     * @see FoxyNotificationScope
+     */
+    fun notification(scope: FoxyNotificationScope) {
+        endpoint = "/api/v1/notifications" + when (scope) {
+            is FoxyNotificationScope.All -> ""
+            is FoxyNotificationScope.Notification -> "/${scope.id}"
+            is FoxyNotificationScope.Clear -> "/clear"
+            is FoxyNotificationScope.Dismiss -> "/${scope.id}/dismiss"
         }
     }
 
@@ -111,6 +110,21 @@ class FoxyRequestBuilder(
             is FoxyStatusScope.Action -> "/${scope.id}/${scope.action.endpointName}"
             is FoxyStatusScope.UndoAction -> "/${scope.id}/un${scope.action.endpointName}"
 
+        }
+    }
+
+    /** Sets the endpoint to fetch a timeline.
+     *
+     * @param scope The timeline to fetch
+     * @see FoxyTimelineScope
+     * */
+    fun timeline(scope: FoxyTimelineScope) {
+        endpoint = when (scope) {
+            is FoxyTimelineScope.Home -> "/api/v1/timelines/home"
+            is FoxyTimelineScope.Network -> "/api/v1/timelines/public"
+            is FoxyTimelineScope.Conversations -> "/api/v1/conversations"
+            is FoxyTimelineScope.List -> "/api/v1/timelines/list/${scope.id}"
+            is FoxyTimelineScope.Tagged -> "/api/v1/timelines/tag/${scope.tag}"
         }
     }
 

@@ -23,8 +23,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class FoxyStatusTests {
-
-    val statusId = "1"
+    private val statusId = "1"
 
     private fun assertStatus(status: Status?) {
         assertNotNull(status, "Status should not be null.")
