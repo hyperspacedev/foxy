@@ -21,13 +21,14 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.datetime.Instant
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import models.Application
 import models.Token
 import security.ValidatedSession
 import utils.FoxyApp
 import utils.FoxyAuthBuilder
-import utils.FoxyRequestBuilder
+import utils.requests.FoxyRequestBuilder
 import utils.responses.MastodonResponse
 import kotlin.native.concurrent.ThreadLocal
 import kotlin.time.Duration.Companion.days
@@ -59,6 +60,7 @@ object Foxy {
     }
 
     /** The primary HTTP client agent. */
+    @OptIn(ExperimentalSerializationApi::class)
     private val client = HttpClient(CIO) {
         install(Auth) {
             bearer {
@@ -77,6 +79,7 @@ object Foxy {
                 prettyPrint = true
                 isLenient = true
                 ignoreUnknownKeys = true
+                explicitNulls = true
             })
         }
     }

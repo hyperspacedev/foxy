@@ -47,7 +47,7 @@ data class Status(
     @SerialName("media_attachments") val mediaAttachment: List<Attachment>,
 
     /** The application used to post this status  */
-    val application: Application,
+    val application: Application? = null,
 
     /** Mentions of users within the status content */
     val mentions: List<Mention>,
@@ -56,7 +56,7 @@ data class Status(
     val tags: List<Tag>,
 
     /** Custom emoji to be used when rendering status content. */
-    val emoji: List<Emoji>,
+    val emoji: List<Emoji>? = null,
 
     /** How many boosts this status has received */
     @SerialName("reblogs_count") val reblogsCounts: Double,
@@ -92,16 +92,16 @@ data class Status(
     val text: String? = null,
 
     /** Did a user favourite this status? */
-    val fovourited: Boolean,
+    val favourited: Boolean? = null,
 
     /** Did a user boost this status? */
-    val reblogged: Boolean,
+    val reblogged: Boolean? = null,
 
     /** Did a user mute this status? */
-    val muted: Boolean,
+    val muted: Boolean? = null,
 
     /** Has a user bookmarked this status? */
-    val bookmarked: Boolean,
+    val bookmarked: Boolean? = null,
 
     /** Did a user pin this status? Only appears if the status is pinnable */
     val pinned: Boolean? = null

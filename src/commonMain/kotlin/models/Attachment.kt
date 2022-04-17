@@ -40,7 +40,7 @@ data class Attachment(
      * Note that this field has been deprecated since Mastodon v3.5.0 and will likely be replaced.
      */
     @MastodonDeprecated("0.6.0", "3.5.0", replaceWith = ReplaceWith("url"))
-    @SerialName("text_url") val textUrl: String,
+    @SerialName("text_url") val textUrl: String? = null,
 
     /** The alternate text for this attachment. */
     val description: String? = null,

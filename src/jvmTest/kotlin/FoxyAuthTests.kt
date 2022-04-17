@@ -32,7 +32,6 @@ class FoxyAuthTests {
     /** Test that the OAuth flow works as intended using client credentials. */
     @Test
     fun testOAuthFlow() {
-        val foxyApp = FoxyApp("TestApplication", null)
         runBlocking {
             val result = Foxy.startOAuthFlow {
                 instance = "mastodon.social"

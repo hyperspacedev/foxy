@@ -10,7 +10,7 @@
  * NPL for details.
  */
 
-package utils
+package utils.requests
 
 import io.ktor.http.*
 import utils.aliases.Parameter
@@ -28,24 +28,6 @@ class FoxyRequestBuilder(
     /** A mutable list of the request parameters. */
     private val params: MutableList<Parameter> = mutableListOf()
 ) {
-
-    /** An enumeration class that represents the various kinds of timelines that can be requested. */
-    enum class TimelineScope(val path: String) {
-
-        /** The user's home timeline. */
-        Home("/api/v1/timelines/home"),
-
-        /** The local timeline of the instance or the public timeline.
-         *
-         * Note that when this endpoint is chosen, to make a request for a local timeline, the local parameter must be
-         * added to the request: `parameter("local", true)`.
-         */
-        Network("/api/v1/timelines/public"),
-
-        /** The user's direct messages. */
-        Messages("/api/v1/conversations")
-    }
-
     enum class InformationScope(val path: String) {
         Instance("/api/v1/instance"),
         User("/api/v1/verify_credentials")
@@ -60,8 +42,23 @@ class FoxyRequestBuilder(
         endpoint = path
     }
 
-    fun info(infoScope: InformationScope) {
+    fun getGeneralInfo(infoScope: InformationScope) {
         endpoint = infoScope.path
+    }
+
+    /** Sets the endpoint to fetch a timeline.
+     *
+     * @param scope The timeline to fetch
+     * @see TimelineScope
+     * */
+    fun getTimeline(scope: FoxyTimelineScope) {
+        endpoint = when (scope) {
+            is FoxyTimelineScope.Home -> "/api/v1/timelines/home"
+            is FoxyTimelineScope.Network -> "/api/v1/timelines/public"
+            is FoxyTimelineScope.Conversations -> "/api/v1/conversations"
+            is FoxyTimelineScope.List -> "/api/v1/timelines/list/${scope.id}"
+            is FoxyTimelineScope.Tagged -> "/api/v1/timelines/tag/${scope.tag}"
+        }
     }
 
     /** Adds a parameter to the list of request parameters.
@@ -81,15 +78,6 @@ class FoxyRequestBuilder(
         val newParameters = mutableListOf<Parameter>()
         builder(newParameters)
         params.addAll(newParameters.toList())
-    }
-
-    /** Sets the endpoint to fetch a timeline.
-     *
-     * @param scope The timeline to fetch
-     * @see TimelineScope
-     * */
-    fun timeline(scope: TimelineScope) {
-        endpoint = scope.path
     }
 
     /** Returns the endpoint that was requested. */

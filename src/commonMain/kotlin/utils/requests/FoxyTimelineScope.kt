@@ -1,5 +1,5 @@
 /*
- * Tag.kt
+ * FoxyTimelineScope.kt
  * Copyright (C) 2022 Hyperspace Developers.
  * This file is part of project Foxy.
  *
@@ -10,20 +10,13 @@
  * NPL for details.
  */
 
-package models
+package utils.requests
 
-import kotlinx.serialization.Serializable
+sealed class FoxyTimelineScope {
+    object Home : FoxyTimelineScope()
+    object Network : FoxyTimelineScope()
+    object Conversations : FoxyTimelineScope()
+    class List(val id: String) : FoxyTimelineScope()
+    class Tagged(val tag: String) : FoxyTimelineScope()
 
-/** A data class representing a hashtag used in statuses and announcements. */
-@Serializable
-data class Tag(
-
-    /** The name of the tag. */
-    val name: String,
-
-    /** A URL linking to a public page displaying statuses with this tag. */
-    val url: String,
-
-    /** A list of usage statistics for this tag. */
-    val history: List<History>? = null
-)
+}

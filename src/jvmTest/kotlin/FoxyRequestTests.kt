@@ -13,23 +13,26 @@
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import models.Instance
-import utils.FoxyApp
-import utils.FoxyRequestBuilder
 import utils.aliases.Timeline
+import utils.requests.FoxyRequestBuilder
+import utils.requests.FoxyTimelineScope
 import utils.responses.MastodonResponse
 import utils.responses.hoistEntityOrNull
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
+/** A class containing tests for handling requests. */
 class FoxyRequestTests {
 
+
+    /** Test that the instance information can be fetched correctly. */
     @Test
     fun testFetchInstance() {
         runBlocking {
             val instanceResponse = Foxy.request<Instance> {
                 method = HttpMethod.Get
-                info(FoxyRequestBuilder.InformationScope.Instance)
+                getGeneralInfo(FoxyRequestBuilder.InformationScope.Instance)
             }
 
             assertTrue(instanceResponse !is MastodonResponse.Error, "Response should have succeeded.")
@@ -40,14 +43,14 @@ class FoxyRequestTests {
         }
     }
 
+    /** Test that the request builder correctly returns an error when unauthenticated. */
     @Test
     fun testUnauthenticatedResponseFails() {
-        // FIXME: Requires access token logic to be implemented so that we can make this authenticated request
         runBlocking {
             val timelineResponse = Foxy.request<Timeline> {
                 method = HttpMethod.Get
 
-                timeline(FoxyRequestBuilder.TimelineScope.Network)
+                getTimeline(FoxyTimelineScope.Home)
                 parameter("local", true)
             }
 
@@ -58,28 +61,4 @@ class FoxyRequestTests {
             assertTrue(mastErr.error.isNotBlank(), "Error mapping should have succeeded.")
         }
     }
-
-    @Test
-    fun testFetchTimeline() {
-        // FIXME: Requires access token logic to be implemented so that we can make this authenticated request
-        val app = FoxyApp("Foxy Unit Testing", "https://hyperspace.marquiskurt.net")
-        runBlocking {
-            Foxy.startOAuthFlow("mastodon.social", app, "urn:ietf:wg:oauth:2.0:oob")
-            Foxy.finishOAuthFlow(Foxy.AuthGrantType.ClientCredential)
-
-            val timelineResponse = Foxy.request<Timeline> {
-                method = HttpMethod.Get
-
-                timeline(FoxyRequestBuilder.TimelineScope.Network)
-                parameter("local", true)
-            }
-
-            assertTrue(timelineResponse !is MastodonResponse.Error)
-            val timeline = timelineResponse.hoistEntityOrNull()
-
-            assertNotNull(timeline)
-            assertTrue(timeline.isNotEmpty())
-        }
-    }
-
 }
