@@ -53,14 +53,14 @@ data class Instance(
     @SerialName("invites_enabled") val invitesEnabled: Boolean,
 
     /** A list of streaming URLs of interest. */
-    val urls: List<InstanceStreamingHash>,
+    val urls: InstanceStreamingHash,
 
     /** The basic statistics of the instance. */
     val stats: InstanceStats,
 
     /** The URL linking to the instance's thumbnail image. */
-    val thumbnail: String?,
+    val thumbnail: String? = null,
 
     /** The account associated with the instance administrator or point of contact. */
-    @SerialName("contact_account") val contactAccount: Account?
+    @SerialName("contact_account") val contactAccount: Account? = null
 )

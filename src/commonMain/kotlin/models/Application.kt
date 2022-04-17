@@ -23,7 +23,7 @@ import kotlinx.serialization.Serializable
 data class Application(
 
     /** The client's ID. */
-    val id: String?,
+    val id: String? = null,
 
     /** The name of the application. */
     val name: String,
@@ -35,20 +35,20 @@ data class Application(
      *
      * This field is only used in client authorization and is not returned in most cases for security reasons.
      */
-    @SerialName("redirect_uri") val redirectUri: String?,
+    @SerialName("redirect_uri") val redirectUri: String? = null,
 
     /** The client ID key used to obtain OAuth tokens.
      *
      * This field is only used in client authorization and is not returned in most cases for security reasons.
      */
-    @SerialName("client_id") val clientId: String?,
+    @SerialName("client_id") val clientId: String? = null,
 
     /** The client secret key used to obtain OAuth tokens.
      *
      * This field is only used in client authorization and is not returned in most cases for security reasons.
      */
-    @SerialName("client_secret") val clientSecret: String?,
+    @SerialName("client_secret") val clientSecret: String? = null,
 
     /** The VAPID key used for accessing the Push Streaming API. */
-    @SerialName("vapid_key") val vapidKey: String?
+    @SerialName("vapid_key") val vapidKey: String? = null
 )

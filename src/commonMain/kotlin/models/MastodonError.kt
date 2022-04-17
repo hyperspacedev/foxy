@@ -26,5 +26,5 @@ data class MastodonError(
      *
      * This is filled in typically with the OAuth API.
      */
-    @SerialName("error_description") val errorDescription: String
+    @SerialName("error_description") val errorDescription: String? = null
 )

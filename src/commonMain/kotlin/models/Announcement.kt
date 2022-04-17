@@ -26,10 +26,10 @@ data class Announcement(
     val content: String,
 
     /** An ISO-8601 string that describes when the announcement starts to broadcast. */
-    @SerialName("starts_at") val startsAt: String?,
+    @SerialName("starts_at") val startsAt: String? = null,
 
     /** An ISO-8601 string that describes when the announcement will stop broadcasting. */
-    @SerialName("ends_at") val endsAt: String?,
+    @SerialName("ends_at") val endsAt: String? = null,
 
     /** Whether the announcement will broadcast all day instead of a specific time. */
     @SerialName("all_day") val allDay: Boolean,
@@ -42,8 +42,12 @@ data class Announcement(
 
     /** Whether the current authorized user has read the announcement. */
     val read: Boolean,
-    // val mentions: List<Account>,
-    // val statuses: List<Status>,
+
+    /** The list of accounts mentioned in the announcement. */
+    val mentions: List<Account>,
+
+    /** The list of statuses associated with this announcement. */
+    val statuses: List<Status>,
 
     /** A list of the tags associated with this announcement. */
     val tags: List<Tag>,

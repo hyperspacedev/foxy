@@ -22,22 +22,22 @@ data class Poll(
     val id: String,
 
     /** When the poll ends or null if the poll does not end */
-    @SerialName("expires_at") val expiresAt: String?,
+    @SerialName("expires_at") val expiresAt: String? = null,
 
     /** Is the poll currently expired? */
     val expired: Boolean,
 
-    /** Doeds the poll allow multiple-choice answers? */
+    /** Does the poll allow multiple-choice answers? */
     val multiple: Boolean,
 
     /** How many unique accounts have voted on a multiple-choice poll */
     @SerialName("votes_count") val votesCount: Double,
 
     /** When called with a user token, has the authorized user voted? Or null if no current user */
-    val voted: Boolean?,
+    val voted: Boolean? = null,
 
     /** Then called with a user token, which options has the authorized user chosen? Contains an array of index values for options or null if no current user*/
-    @SerialName("own_votes") val ownVotes: List<Double>?,
+    @SerialName("own_votes") val ownVotes: List<Double>? = null,
 
     /** Possible answers for the poll */
     val options: List<PollOptions>,

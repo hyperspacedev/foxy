@@ -24,22 +24,22 @@ data class ScheduledStatusParameters(
     val text: String,
 
     /** The ID of the account the status replies to, if it is a reply. */
-    @SerialName("in_reply_to_id") val inReplyToId: String?,
+    @SerialName("in_reply_to_id") val inReplyToId: String? = null,
 
     /** A list of the IDs for media attachments. */
-    @SerialName("media_ids") val mediaIds: List<String>?,
+    @SerialName("media_ids") val mediaIds: List<String>? = null,
 
     /** Whether this status has been marked as sensitive and needs a content warning. */
-    val sensitive: Boolean?,
+    val sensitive: Boolean? = null,
 
     /** The spoiler text and/or content warning for this post, if it has been marked as sensitive. */
-    @SerialName("spoiler_text") val spoilerText: String?,
+    @SerialName("spoiler_text") val spoilerText: String? = null,
 
     /** The visibility of the status. */
     val visibility: String,
 
     /** An ISO-8601 string that states when this status was scheduled. */
-    @SerialName("scheduled_at") val scheduledAt: String?,
+    @SerialName("scheduled_at") val scheduledAt: String? = null,
 
     /** The ID of the application used to post this status. */
     @SerialName("application_id") val applicationId: String
