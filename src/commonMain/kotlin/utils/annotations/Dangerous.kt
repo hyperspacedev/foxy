@@ -1,5 +1,5 @@
 /*
- * Tag.kt
+ * Dangerous.kt
  * Copyright (C) 2022 Hyperspace Developers.
  * This file is part of project Foxy.
  *
@@ -10,20 +10,10 @@
  * NPL for details.
  */
 
-package models
+package utils.annotations
 
-import kotlinx.serialization.Serializable
-
-/** A data class representing a hashtag used in statuses and announcements. */
-@Serializable
-data class Tag(
-
-    /** The name of the tag. */
-    val name: String,
-
-    /** A URL linking to a public page displaying statuses with this tag. */
-    val url: String,
-
-    /** A list of usage statistics for this tag. */
-    val history: List<History>? = null
-)
+/** An annotation that indicates that the developer must explicitly acknowledge the annotated member in question carries
+ * unintended side effects.
+ */
+@RequiresOptIn(level = RequiresOptIn.Level.ERROR)
+annotation class Dangerous()

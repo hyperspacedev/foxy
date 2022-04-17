@@ -1,5 +1,5 @@
 /*
- * Tag.kt
+ * FoxyAccountScope.kt
  * Copyright (C) 2022 Hyperspace Developers.
  * This file is part of project Foxy.
  *
@@ -10,20 +10,14 @@
  * NPL for details.
  */
 
-package models
+package utils.requests
 
-import kotlinx.serialization.Serializable
+/** A sealed class that represents the different account scopes available to the request builder. */
+sealed class FoxyAccountScope {
 
-/** A data class representing a hashtag used in statuses and announcements. */
-@Serializable
-data class Tag(
+    /** The current user. */
+    class CurrentUser() : FoxyAccountScope()
 
-    /** The name of the tag. */
-    val name: String,
-
-    /** A URL linking to a public page displaying statuses with this tag. */
-    val url: String,
-
-    /** A list of usage statistics for this tag. */
-    val history: List<History>? = null
-)
+    /** An account with a specified ID. */
+    class Account(val id: String) : FoxyAccountScope()
+}

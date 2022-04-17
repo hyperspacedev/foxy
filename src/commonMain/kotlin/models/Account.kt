@@ -56,7 +56,7 @@ data class Account(
     val emojis: List<Emoji>,
 
     /** Whether the account has opted into discovery features such as the profile directory */
-    val discoverable: Boolean,
+    val discoverable: Boolean? = null,
 
     /** When the account was created. ISO 8601 Datetime */
     @SerialName("created_at") val createdAt: String,

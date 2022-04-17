@@ -21,12 +21,15 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.datetime.Instant
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import models.Application
 import models.Token
 import security.ValidatedSession
 import utils.FoxyApp
-import utils.FoxyRequestBuilder
+import utils.FoxyAuthBuilder
+import utils.requests.FoxyRequestBuilder
+import utils.responses.MastodonResponse
 import kotlin.native.concurrent.ThreadLocal
 import kotlin.time.Duration.Companion.days
 
@@ -57,6 +60,7 @@ object Foxy {
     }
 
     /** The primary HTTP client agent. */
+    @OptIn(ExperimentalSerializationApi::class)
     private val client = HttpClient(CIO) {
         install(Auth) {
             bearer {
@@ -75,18 +79,23 @@ object Foxy {
                 prettyPrint = true
                 isLenient = true
                 ignoreUnknownKeys = true
+                explicitNulls = true
             })
         }
     }
 
     /** Make an HTTP request to the Mastodon server.
      * @param builder A receiver closure describing the request to make to the server.
-     * @return The HTTP response for that request.
+     * @return A MastodonResponse that contains the data requested, or the error reported by the server.
+     * @see MastodonResponse
      */
-    suspend fun request(builder: FoxyRequestBuilder.() -> Unit): HttpResponse {
+    suspend inline fun <reified T> request(builder: FoxyRequestBuilder.() -> Unit): MastodonResponse<T> {
         val request = FoxyRequestBuilder()
         builder(request)
-        return makeRequest(request.method, request.endpoint, request.getParams())
+        val response = makeRequest(request.method, request.getEndpoint(), request.getParams())
+        if (response.status != HttpStatusCode.OK)
+            return MastodonResponse.Error(error = response.body())
+        return MastodonResponse.Success(response.body() as T)
     }
 
     /** Sets the instance domain of the client to make requests to.
@@ -103,16 +112,21 @@ object Foxy {
      * @param domain The instance's URI, without the HTTP protocol marker.
      * @param app The application that will be created on the server.
      * @param redirectUri The URI that the user will be redirected to when authorization is accepted or rejected.
-     * @return The URL that the user will visit to authenticate and autorize the app. This can be ignored if the app is
+     * @return The URL that the user will visit to authenticate and authorize the app. This can be ignored if the app is
      * obtaining app-level access rather than user-level access.
      */
-    suspend fun startOAuthFlow(domain: String, app: FoxyApp, redirectUri: String): String {
+    suspend fun startOAuthFlow(
+        domain: String,
+        app: FoxyApp,
+        redirectUri: String,
+        customScopes: List<String>? = null
+    ): String {
         val fapEntity = registerApplication(domain, app.name, redirectUri, app.website)
             .body<Application>()
 
         appEntity = fapEntity
 
-        val benjamin = scopes.joinToString("%20")
+        val benjamin = customScopes?.joinToString("%20") ?: scopes.joinToString("%20")
 
         val components = listOf(
             "https://$domain/oauth/authorize",
@@ -126,7 +140,23 @@ object Foxy {
         return components.joinToString("")
     }
 
-    /** Finishes authorization process by retrieveing the access code to create the token and storing it securely.
+    /** Starts the OAuth authorization process by making a request to the server and fetching the authorization URL.
+     * @param builder A receiver closure that builds an authentication request.
+     * @return The URL that the user will visit to authenticate and authorize the app. This can be ignored if the app is
+     * obtaining app-level access rather than user-level access.
+     */
+    suspend fun startOAuthFlow(builder: FoxyAuthBuilder.() -> Unit): String {
+        val foxyAuthBuilder = FoxyAuthBuilder(domain, "urn:ietf:wg:oauth:2.0:oob")
+        builder(foxyAuthBuilder)
+        return startOAuthFlow(
+            foxyAuthBuilder.instance,
+            foxyAuthBuilder.getApp(),
+            foxyAuthBuilder.redirectUri,
+            foxyAuthBuilder.getScopes()
+        )
+    }
+
+    /** Finishes authorization process by retrieving the access code to create the token and storing it securely.
      * @param grant The level of access the app will have.
      * @param code The URL containing the access code needed to obtain an access token. This is unused when only
      * app-level access is requested.
@@ -134,7 +164,8 @@ object Foxy {
     suspend fun finishOAuthFlow(grant: AuthGrantType, code: String = "") {
         val authorizationCode = code.split("code")
         val redirectUri =
-            if (authorizationCode.count() > 1) authorizationCode[0].removeSuffix("?") else "urn:ietf:wg:oauth:2.0:oob"
+            if (authorizationCode.count() > 1) authorizationCode[0].removeSuffix("?")
+            else "urn:ietf:wg:oauth:2.0:oob"
 
         val fapEntity = appEntity ?: return
 
@@ -174,7 +205,8 @@ object Foxy {
     }
 
     /** Makes a general HTTP request using the domain and access token. */
-    private suspend fun makeRequest(type: HttpMethod, path: String, params: List<Pair<String, Any?>>): HttpResponse =
+    @PublishedApi
+    internal suspend fun makeRequest(type: HttpMethod, path: String, params: List<Pair<String, Any?>>): HttpResponse =
         client.request {
             url {
                 protocol = URLProtocol.HTTPS

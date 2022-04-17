@@ -10,7 +10,7 @@
  * NPL for details.
  */
 
-package utils
+package utils.annotations
 
 import kotlin.annotation.AnnotationTarget.*
 
