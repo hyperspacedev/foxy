@@ -14,7 +14,7 @@ package models
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import utils.MastodonDeprecated
+import utils.annotations.MastodonDeprecated
 
 /** A data class that represents an attachment on a status. */
 @Serializable

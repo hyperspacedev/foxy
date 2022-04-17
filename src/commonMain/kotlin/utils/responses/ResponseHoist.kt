@@ -1,5 +1,5 @@
 /*
- * Timeline.kt
+ * ResponseHoist.kt
  * Copyright (C) 2022 Hyperspace Developers.
  * This file is part of project Foxy.
  *
@@ -10,9 +10,14 @@
  * NPL for details.
  */
 
-package utils
+package utils.responses
 
-import models.Status
-
-/** A typealias that represents a list of statuses. */
-typealias Timeline = List<Status>
+/** Hoists the entity value of the response up.
+ *
+ * @return The entity value of the response if the response is successful, or null if the response is an error.
+ */
+fun <T> MastodonResponse<T>.hoistEntityOrNull(): T? =
+    when (this) {
+        is MastodonResponse.Error -> null
+        is MastodonResponse.Success<T> -> entity
+    }

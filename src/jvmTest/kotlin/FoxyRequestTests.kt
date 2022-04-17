@@ -13,7 +13,11 @@
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import models.Instance
-import utils.*
+import utils.FoxyApp
+import utils.FoxyRequestBuilder
+import utils.aliases.Timeline
+import utils.responses.MastodonResponse
+import utils.responses.hoistEntityOrNull
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -28,18 +32,17 @@ class FoxyRequestTests {
                 info(FoxyRequestBuilder.InformationScope.Instance)
             }
 
-            assertTrue(instanceResponse !is MastodonResponse.Error)
+            assertTrue(instanceResponse !is MastodonResponse.Error, "Response should have succeeded.")
             val instance = instanceResponse.hoistEntityOrNull()
 
-            assertNotNull(instance)
-            assertTrue(instance.uri == "mastodon.social")
+            assertNotNull(instance, "Entity response should've been hoisted correctly.")
+            assertTrue(instance.uri == "mastodon.social", "Instance URIs don't match.")
         }
     }
 
     @Test
     fun testUnauthenticatedResponseFails() {
         // FIXME: Requires access token logic to be implemented so that we can make this authenticated request
-        val app = FoxyApp("Foxy Unit Testing", "https://hyperspace.marquiskurt.net")
         runBlocking {
             val timelineResponse = Foxy.request<Timeline> {
                 method = HttpMethod.Get
@@ -48,11 +51,11 @@ class FoxyRequestTests {
                 parameter("local", true)
             }
 
-            assertTrue(timelineResponse is MastodonResponse.Error)
+            assertTrue(timelineResponse is MastodonResponse.Error, "Response should have failed.")
             val mastErr = timelineResponse.error
 
-            assertNotNull(mastErr)
-            assertTrue(mastErr.error.isNotBlank())
+            assertNotNull(mastErr, "Error should not be null.")
+            assertTrue(mastErr.error.isNotBlank(), "Error mapping should have succeeded.")
         }
     }
 

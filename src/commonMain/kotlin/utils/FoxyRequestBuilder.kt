@@ -13,6 +13,8 @@
 package utils
 
 import io.ktor.http.*
+import utils.aliases.Parameter
+import utils.annotations.Dangerous
 
 /** A builder class that handles building requests to Mastodon. */
 class FoxyRequestBuilder(
@@ -24,7 +26,7 @@ class FoxyRequestBuilder(
     private var endpoint: String = "",
 
     /** A mutable list of the request parameters. */
-    private val params: MutableList<Pair<String, Any>> = mutableListOf()
+    private val params: MutableList<Parameter> = mutableListOf()
 ) {
 
     /** An enumeration class that represents the various kinds of timelines that can be requested. */
@@ -49,6 +51,11 @@ class FoxyRequestBuilder(
         User("/api/v1/verify_credentials")
     }
 
+    /** Sets the endpoint to a custom string.
+     *
+     * This should only be used if the existing endpoint methods do not provide the endpoint requested.
+     */
+    @Dangerous
     fun customEndpoint(path: String) {
         endpoint = path
     }
@@ -66,6 +73,16 @@ class FoxyRequestBuilder(
         params.add(Pair(key, value))
     }
 
+    /** Adds a list of parameters to the request parameters.
+     *
+     * @param builder A receiver closure that builds a list of parameters.
+     */
+    fun parameters(builder: MutableList<Parameter>.() -> Unit) {
+        val newParameters = mutableListOf<Parameter>()
+        builder(newParameters)
+        params.addAll(newParameters.toList())
+    }
+
     /** Sets the endpoint to fetch a timeline.
      *
      * @param scope The timeline to fetch
@@ -79,6 +96,6 @@ class FoxyRequestBuilder(
     fun getEndpoint(): String = endpoint
 
     /** Returns a list of the parameters to be passed into the client's request. */
-    fun getParams(): List<Pair<String, Any>> = params.toList()
+    fun getParams(): List<Parameter> = params.toList()
 
 }

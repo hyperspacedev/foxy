@@ -10,7 +10,7 @@
  * NPL for details.
  */
 
-package utils
+package utils.responses
 
 import models.MastodonError
 

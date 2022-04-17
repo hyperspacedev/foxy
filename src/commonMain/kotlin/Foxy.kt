@@ -27,7 +27,7 @@ import models.Token
 import security.ValidatedSession
 import utils.FoxyApp
 import utils.FoxyRequestBuilder
-import utils.MastodonResponse
+import utils.responses.MastodonResponse
 import kotlin.native.concurrent.ThreadLocal
 import kotlin.time.Duration.Companion.days
 
