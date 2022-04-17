@@ -32,10 +32,9 @@ class FoxyTimelineTests {
     /** Test that the client can successfully fetch the public timeline. */
     @Test
     fun testFetchTimeline() {
-        // FIXME: Requires access token logic to be implemented so that we can make this authenticated request
         runBlocking {
             Foxy.startOAuthFlow {
-                instance = "mastodon.social"
+                instance = "fosstodon.org"
                 appName("Foxy Unit Testing")
                 appWebsite("https://hyperspace.marquiskurt.net")
 
@@ -51,6 +50,9 @@ class FoxyTimelineTests {
                 timeline(FoxyTimelineScope.Network)
                 parameter("local", true)
             }
+
+            if (timelineResponse is MastodonResponse.Error)
+                println(timelineResponse.error.error)
 
             assertTrue(timelineResponse !is MastodonResponse.Error, "Response should have succeeded.")
             val timeline = timelineResponse.hoistEntityOrNull()

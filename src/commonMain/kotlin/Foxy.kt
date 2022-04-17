@@ -13,8 +13,6 @@
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
-import io.ktor.client.plugins.auth.*
-import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -30,6 +28,7 @@ import utils.FoxyApp
 import utils.FoxyAuthBuilder
 import utils.requests.FoxyRequestBuilder
 import utils.responses.MastodonResponse
+import utils.tokenStorageWrite
 import kotlin.native.concurrent.ThreadLocal
 import kotlin.time.Duration.Companion.days
 
@@ -62,18 +61,6 @@ object Foxy {
     /** The primary HTTP client agent. */
     @OptIn(ExperimentalSerializationApi::class)
     private val client = HttpClient(CIO) {
-        install(Auth) {
-            bearer {
-                loadTokens {
-                    // TODO: Once we have a Bearer Token, define logic to load it from storage/cache here
-                    BearerTokens("Access token here??", "Something goes here too")
-                }
-                refreshTokens {
-                    // TODO: Specify logic to refresh the token here
-                    BearerTokens("Access token here??", "Something goes here too")
-                }
-            }
-        }
         install(ContentNegotiation) {
             json(Json {
                 prettyPrint = true
@@ -198,6 +185,12 @@ object Foxy {
             14.days
                 .inWholeSeconds
         )
+
+        tokenStorageWrite(
+            session?.token + ";" + session?.timestamp + ";" + session?.integrity + ";" +
+                    if (grant == AuthGrantType.AuthorizationCode) authorizationCode[1].removePrefix("=") else
+                        "NoRefreshToken"
+        )
     }
 
     fun close() {
@@ -217,6 +210,9 @@ object Foxy {
             params.forEach { (name, value) ->
                 parameter(name, value)
             }
+
+            if (session != null)
+                header("Authorization", "Bearer ${session?.token ?: ""}")
         }
 
     /** Registers the application for authorization and use on the server. */
