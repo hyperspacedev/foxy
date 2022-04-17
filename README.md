@@ -105,7 +105,7 @@ when (response) {
 }
 
 // Or, hoist the type, if you don't care about errors. This will return a nullable type.
-val timeline: Timeline? = response.hoistEntityUpOrNull()
+val timeline: Timeline? = response.hoistEntityOrNull()
 
 ```
 
