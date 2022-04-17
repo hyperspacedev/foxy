@@ -56,9 +56,17 @@ class FoxyRequestBuilder(
         endpoint = path
     }
 
-    /** Sets the endpoint to retrieve the instance information. */
-    fun instance() {
-        endpoint = "/api/v1/instance"
+    /** Sets the endpoint to retrieve instance information.
+     *
+     * @param scope The instance scope endpoint to fetch.
+     * @See FoxyInstanceScope
+     * */
+    fun instance(scope: FoxyInstanceScope) {
+        endpoint = "/api/v1/instance" + when (scope) {
+            is FoxyInstanceScope.Instance -> ""
+            is FoxyInstanceScope.Peers -> "/peers"
+            is FoxyInstanceScope.Activity -> "/activity"
+        }
     }
 
     /** Sets the endpoint to a notification-related action.
