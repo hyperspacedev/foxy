@@ -144,4 +144,11 @@ class FoxyRequestBuilder(
         }
     }
 
+    /***
+     * Sets the end point to search for content in accounts, statuses, and hashtags
+     */
+    fun search(){
+        endpoint = "/api/v2/search"
+    }
+
 }
