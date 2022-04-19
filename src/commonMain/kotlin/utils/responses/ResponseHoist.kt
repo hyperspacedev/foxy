@@ -12,7 +12,9 @@
 
 package utils.responses
 
-/** Hoists the entity value of the response up.
+import models.MastodonError
+
+/** Hoists the entity value of the response.
  *
  * @return The entity value of the response if the response is successful, or null if the response is an error.
  */
@@ -20,4 +22,14 @@ fun <T> MastodonResponse<T>.hoistEntityOrNull(): T? =
     when (this) {
         is MastodonResponse.Error -> null
         is MastodonResponse.Success<T> -> entity
+    }
+
+/** Hoists the error from a response.
+ *
+ * @return The error from the response if the response is successful, or null if the response was successful.
+ */
+fun <T> MastodonResponse<T>.hoistErrorOrNull(): MastodonError? =
+    when (this) {
+        is MastodonResponse.Error -> error
+        is MastodonResponse.Success<T> -> null
     }
