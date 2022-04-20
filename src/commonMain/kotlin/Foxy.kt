@@ -18,7 +18,10 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import models.Application
@@ -48,14 +51,14 @@ object Foxy {
     /** The client's current session with the access token. */
     private var session: ValidatedSession? = null
 
-    /** An enumeration class describing the different grant methods. */
-    enum class AuthGrantType(val parameter: String) {
+    /** A sealed class that represents the authorization grant types. */
+    sealed class AuthGrantType {
 
-        /** The client wants to obtain app-level access. */
-        ClientCredential("client_credentials"),
+        /** Request app-level client credentials that cannot access user-specific endpoints. */
+        object ClientCredentials : AuthGrantType()
 
-        /** The client want to obtain user-level access. */
-        AuthorizationCode("authorization_code")
+        /** Request user-level access with an authorization callback URL. */
+        class AuthorizationCode(val authCodeUrl: String) : AuthGrantType()
     }
 
     /** The primary HTTP client agent. */
@@ -148,12 +151,7 @@ object Foxy {
      * @param code The URL containing the access code needed to obtain an access token. This is unused when only
      * app-level access is requested.
      */
-    suspend fun finishOAuthFlow(grant: AuthGrantType, code: String = "") {
-        val authorizationCode = code.split("code")
-        val redirectUri =
-            if (authorizationCode.count() > 1) authorizationCode[0].removeSuffix("?")
-            else "urn:ietf:wg:oauth:2.0:oob"
-
+    suspend fun finishOAuthFlow(grant: AuthGrantType) {
         val fapEntity = appEntity ?: return
 
         val tokenEntity = makeRequest(
@@ -161,16 +159,26 @@ object Foxy {
             buildList {
                 addAll(
                     listOf(
-                        Pair("grant_type", grant.parameter),
+                        Pair(
+                            "grant_type", when (grant) {
+                                is AuthGrantType.ClientCredentials -> "client_credentials"
+                                is AuthGrantType.AuthorizationCode -> "code"
+                            }
+                        ),
                         Pair("client_id", fapEntity.clientId),
                         Pair("client_secret", fapEntity.clientSecret),
-                        Pair("redirect_uri", redirectUri)
                     )
                 )
 
-                if (grant == AuthGrantType.AuthorizationCode)
-                    add(Pair("code", authorizationCode[1].removePrefix("=")))
+                when (grant) {
+                    is AuthGrantType.AuthorizationCode -> {
+                        addAuthCodeToTokenRequest(grant)
+                    }
 
+                    is AuthGrantType.ClientCredentials -> {
+                        add(Pair("redirect_uri", "urn:ietf:wg:oauth:2.0:oob"))
+                    }
+                }
             }
         ).body<Token>()
 
@@ -187,15 +195,36 @@ object Foxy {
         )
 
         tokenStorageWrite(
-            session?.token + ";" + session?.timestamp + ";" + session?.integrity + ";" +
-                    if (grant == AuthGrantType.AuthorizationCode) authorizationCode[1].removePrefix("=") else
-                        "NoRefreshToken"
+            listOf(
+                session?.token ?: "",
+                session?.timestamp ?: Clock.System.now()
+                    .toLocalDateTime(TimeZone.UTC)
+                    .toString(),
+                session?.integrity ?: "none",
+                getRefreshToken(grant)
+            ).joinToString(";")
         )
     }
 
-    fun close() {
-        client.close()
+    private fun getRefreshToken(grant: Foxy.AuthGrantType): String {
+        return when (grant) {
+            is AuthGrantType.AuthorizationCode -> {
+                grant.authCodeUrl.split("code")[1].removePrefix("=")
+            }
+            else -> "NoRefreshToken"
+        }
     }
+
+    private fun MutableList<Pair<String, Any?>>.addAuthCodeToTokenRequest(grant: AuthGrantType.AuthorizationCode) {
+        val authorizationCode = grant.authCodeUrl.split("code")
+        val redirectUri =
+            if (authorizationCode.count() > 1) authorizationCode[0].removeSuffix("?")
+            else "urn:ietf:wg:oauth:2.0:oob"
+        add(Pair("code", authorizationCode[1].removePrefix("=")))
+        add(Pair("redirect_uri", redirectUri))
+    }
+
+    fun close() = client.close()
 
     /** Makes a general HTTP request using the domain and access token. */
     @PublishedApi

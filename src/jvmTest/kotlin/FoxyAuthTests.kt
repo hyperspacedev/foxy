@@ -49,7 +49,7 @@ class FoxyAuthTests {
             }
             assertNotNull(result)
             assertTrue(result.isNotBlank())
-            Foxy.finishOAuthFlow(Foxy.AuthGrantType.ClientCredential, "")
+            Foxy.finishOAuthFlow(Foxy.AuthGrantType.ClientCredentials)
         }
     }
 }

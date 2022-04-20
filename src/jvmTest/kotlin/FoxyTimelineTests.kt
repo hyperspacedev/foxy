@@ -42,7 +42,7 @@ class FoxyTimelineTests {
                     add("read")
                 }
             }
-            Foxy.finishOAuthFlow(Foxy.AuthGrantType.ClientCredential)
+            Foxy.finishOAuthFlow(Foxy.AuthGrantType.ClientCredentials)
 
             val timelineResponse = Foxy.request<Timeline> {
                 method = HttpMethod.Get
@@ -73,7 +73,7 @@ class FoxyTimelineTests {
                     add("read")
                 }
             }
-            Foxy.finishOAuthFlow(Foxy.AuthGrantType.ClientCredential)
+            Foxy.finishOAuthFlow(Foxy.AuthGrantType.ClientCredentials)
 
             val timelineResponse = Foxy.request<Timeline> {
                 method = HttpMethod.Get
