@@ -148,8 +148,6 @@ object Foxy {
 
     /** Finishes authorization process by retrieving the access code to create the token and storing it securely.
      * @param grant The level of access the app will have.
-     * @param code The URL containing the access code needed to obtain an access token. This is unused when only
-     * app-level access is requested.
      */
     suspend fun finishOAuthFlow(grant: AuthGrantType) {
         val fapEntity = appEntity ?: return
@@ -206,7 +204,7 @@ object Foxy {
         )
     }
 
-    private fun getRefreshToken(grant: Foxy.AuthGrantType): String {
+    private fun getRefreshToken(grant: AuthGrantType): String {
         return when (grant) {
             is AuthGrantType.AuthorizationCode -> {
                 grant.authCodeUrl.split("code")[1].removePrefix("=")
