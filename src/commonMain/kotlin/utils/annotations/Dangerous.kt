@@ -15,5 +15,9 @@ package utils.annotations
 /** An annotation that indicates that the developer must explicitly acknowledge the annotated member in question carries
  * unintended side effects.
  */
-@RequiresOptIn(level = RequiresOptIn.Level.ERROR)
+@RequiresOptIn(
+    "This declaration may have unintended side effects and should be marked with 'Dangerous' or"
+            + "'@Option(Dangerous::class).'",
+    level = RequiresOptIn.Level.ERROR
+)
 annotation class Dangerous()

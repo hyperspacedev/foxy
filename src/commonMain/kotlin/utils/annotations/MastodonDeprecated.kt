@@ -18,6 +18,11 @@ import kotlin.annotation.AnnotationTarget.*
 @Target(CLASS, FUNCTION, PROPERTY, ANNOTATION_CLASS, CONSTRUCTOR, PROPERTY_SETTER, PROPERTY_GETTER, TYPEALIAS)
 @Retention(AnnotationRetention.BINARY)
 @MustBeDocumented
+@RequiresOptIn(
+    "This declaration calls code deprecated in Mastodon and should be marked with 'MastodonDeprecated' or"
+            + "'@Option(MastodonDeprecated::class).'",
+    level = RequiresOptIn.Level.ERROR
+)
 annotation class MastodonDeprecated(
 
     /** The version that this feature was introduced into Mastodon. */
