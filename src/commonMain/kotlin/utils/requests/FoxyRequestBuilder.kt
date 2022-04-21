@@ -129,11 +129,12 @@ class FoxyRequestBuilder(
      * @see FoxyNotificationScope
      */
     fun notification(scope: FoxyNotificationScope) {
-        endpoint = "/api/v1/notifications" + when (scope) {
-            is FoxyNotificationScope.All -> ""
-            is FoxyNotificationScope.Notification -> "/${scope.id}"
-            is FoxyNotificationScope.Clear -> "/clear"
-            is FoxyNotificationScope.Dismiss -> "/${scope.id}/dismiss"
+        endpoint = when (scope) {
+            is FoxyNotificationScope.All -> "/api/v1/notifications"
+            is FoxyNotificationScope.Notification -> "/api/v1/notifications/${scope.id}"
+            is FoxyNotificationScope.Clear -> "/api/v1/notifications/clear"
+            is FoxyNotificationScope.Dismiss -> "/api/v1/notifications/${scope.id}/dismiss"
+            is FoxyNotificationScope.Push -> "/api/v1/push/subscription"
         }
     }
 
@@ -186,6 +187,24 @@ class FoxyRequestBuilder(
             is FoxyTimelineScope.Conversations -> "/api/v1/conversations"
             is FoxyTimelineScope.List -> "/api/v1/timelines/list/${scope.id}"
             is FoxyTimelineScope.Tagged -> "/api/v1/timelines/tag/${scope.tag}"
+        }
+    }
+
+    /** Sets the endpoints to work with attachments in a status
+     * @param scope The attachment scope to work with
+     * @see FoxyAttachmentScope
+     * */
+    fun attachment(scope: FoxyAttachmentScope) {
+        endpoint = when (scope) {
+            is FoxyAttachmentScope.Media ->
+                if (scope.id != null) "/api/v1/media/${scope.id}"
+                else "api/v2/media"
+            is FoxyAttachmentScope.Polls ->
+                if (scope.vote != null) "/api/v1/polls/${scope.vote}/votes"
+                else "/api/v1/polls/${scope.id}"
+            is FoxyAttachmentScope.Scheduled ->
+                if (scope.id != null) "/api/v1/scheduled_statuses/${scope.id}"
+                else "/api/v1/scheduled_statuses"
         }
     }
 
