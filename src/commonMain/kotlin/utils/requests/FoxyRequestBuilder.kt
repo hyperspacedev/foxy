@@ -12,6 +12,7 @@
 
 package utils.requests
 
+import io.ktor.client.request.forms.*
 import io.ktor.http.*
 import utils.aliases.Parameter
 import utils.annotations.Dangerous
@@ -26,11 +27,17 @@ class FoxyRequestBuilder(
     private var endpoint: String = "",
 
     /** A mutable list of the request parameters. */
-    private val params: MutableList<Parameter> = mutableListOf()
+    private val params: MutableList<Parameter> = mutableListOf(),
+
+    /** A form builder to send Form Data */
+    private var formDataBuilder: FormBuilder.() -> Unit = {}
 ) {
 
     /** Returns the endpoint that was requested. */
     fun getEndpoint(): String = endpoint
+
+    /** Returns the form builder */
+    fun getFormBuilder(): FormBuilder.() -> Unit = formDataBuilder
 
     /** Returns a list of the parameters to be passed into the client's request. */
     fun getParams(): List<Parameter> = params.toList()
@@ -55,6 +62,38 @@ class FoxyRequestBuilder(
         }
     }
 
+    /** Sets the endpoint to work with current user's account
+     *
+     * @param scope The personal scope
+     * @see FoxyPersonalScope
+     * */
+    fun personal(scope: FoxyPersonalScope) {
+        endpoint = when (scope) {
+            is FoxyPersonalScope.Bookmarks -> "/api/v1/bookmarks"
+            is FoxyPersonalScope.Favorites -> "/api/v1/favourites"
+            is FoxyPersonalScope.Mutes -> "/api/v1/mutes"
+            is FoxyPersonalScope.Blocks -> "/api/v1/blocks"
+            is FoxyPersonalScope.DomainBlocks -> "/api/v1/domain_blocks"
+            is FoxyPersonalScope.Filters ->
+                if (scope.id == null) "/api/v1/filters"
+                else "/api/v1/filters/${scope.id}"
+            is FoxyPersonalScope.Report -> "/api/v1/reports"
+            is FoxyPersonalScope.Follow ->
+                if (scope.id == null) "/api/v1/follow_requests"
+                else "/api/v1/follow_requests/${scope.id}/${scope.action}"
+
+            is FoxyPersonalScope.Endorsements -> "api/v1/endorsements"
+            is FoxyPersonalScope.FeaturedTags ->
+                if (scope.id != null) "/api/v1/featured_tags/${scope.id}"
+                else if (scope.suggested != null) "/api/v1/featured_tags/suggestions"
+                else "/api/v1/featured_tags"
+            is FoxyPersonalScope.Preferences -> "/api/v1/preferences"
+            is FoxyPersonalScope.Suggestions ->
+                if (scope.id != null) "/api/v1/suggestions/${scope.id}"
+                else "/api/v1/suggestions"
+        }
+    }
+
     /** Sets the endpoint to a custom string.
      *
      * This should only be used if the existing endpoint methods do not provide the endpoint requested.
@@ -63,6 +102,12 @@ class FoxyRequestBuilder(
     fun customEndpoint(path: String) {
         endpoint = path
     }
+
+    /** Set the internal class FormBuilder to a private var so Foxy can use it. */
+    fun formData(builder: FormBuilder.() -> Unit) {
+        formDataBuilder = builder
+    }
+
 
     /** Sets the endpoint to retrieve instance information.
      *
@@ -147,7 +192,7 @@ class FoxyRequestBuilder(
     /***
      * Sets the end point to search for content in accounts, statuses, and hashtags
      */
-    fun search(){
+    fun search() {
         endpoint = "/api/v2/search"
     }
 
