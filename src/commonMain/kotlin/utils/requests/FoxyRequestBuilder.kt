@@ -75,13 +75,12 @@ class FoxyRequestBuilder(
             is FoxyPersonalScope.Blocks -> "/api/v1/blocks"
             is FoxyPersonalScope.DomainBlocks -> "/api/v1/domain_blocks"
             is FoxyPersonalScope.Filters ->
-                if (scope.id == null) "/api/v1/filters"
-                else "/api/v1/filters/${scope.id}"
+                if (scope.id != null) "/api/v1/filters/${scope.id}"
+                else "/api/v1/filters"
             is FoxyPersonalScope.Report -> "/api/v1/reports"
             is FoxyPersonalScope.Follow ->
-                if (scope.id == null) "/api/v1/follow_requests"
-                else "/api/v1/follow_requests/${scope.id}/${scope.action}"
-
+                if (scope.id != null) "/api/v1/follow_requests/${scope.id}/${scope.action}"
+                else "/api/v1/follow_requests"
             is FoxyPersonalScope.Endorsements -> "api/v1/endorsements"
             is FoxyPersonalScope.FeaturedTags ->
                 if (scope.id != null) "/api/v1/featured_tags/${scope.id}"
@@ -115,10 +114,13 @@ class FoxyRequestBuilder(
      * @See FoxyInstanceScope
      * */
     fun instance(scope: FoxyInstanceScope) {
-        endpoint = "/api/v1/instance" + when (scope) {
-            is FoxyInstanceScope.Instance -> ""
-            is FoxyInstanceScope.Peers -> "/peers"
-            is FoxyInstanceScope.Activity -> "/activity"
+        endpoint = when (scope) {
+            is FoxyInstanceScope.Instance -> "/api/v1/instance"
+            is FoxyInstanceScope.Peers -> "/api/v1/instance/peers"
+            is FoxyInstanceScope.Activity -> "/api/v1/instance/activity"
+            is FoxyInstanceScope.Trends -> "/api/v1/trends"
+            is FoxyInstanceScope.Directory -> "/api/v1/directory"
+            is FoxyInstanceScope.CustomEmojis -> "/api/v1/custom_emojis"
         }
     }
 
@@ -205,6 +207,21 @@ class FoxyRequestBuilder(
             is FoxyAttachmentScope.Scheduled ->
                 if (scope.id != null) "/api/v1/scheduled_statuses/${scope.id}"
                 else "/api/v1/scheduled_statuses"
+        }
+    }
+
+    fun subTimelineScopes(scope: SubTimelineScopes) {
+        endpoint = when (scope) {
+            is SubTimelineScopes.Conversations ->
+                if (scope.id != null) {
+                    if (scope.read != null) "/api/v1/conversations/${scope.id}/read"
+                    else "/api/v1/conversations/${scope.id}"
+                } else "/api/v1/conversations"
+            is SubTimelineScopes.Lists ->
+                if (scope.id != null) "/api/v1/lists/${scope.id}"
+                else "/api/v1/lists"
+            is SubTimelineScopes.AccountsInList -> "/api/v1/lists/${scope.id}/accounts"
+            is SubTimelineScopes.Markers -> "/api/v1/markers"
         }
     }
 
