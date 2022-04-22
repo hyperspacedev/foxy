@@ -6,6 +6,38 @@ An idiomatic Kotlin wrapper for the Mastodon API
 
 ## Getting started
 
+Add the following information to your `build.gradle.kts` file:
+
+```kotlin
+// MERGE THIS WITH YOUR REPOSITORIES ENTRY
+repositories {
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/hyperspacedev/foxy")
+        credentials {
+            username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
+            password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
+        }
+    }
+}
+
+// MERGE THIS WITH YOUR DEPENDENCIES ENTRY
+dependencies {
+    implementation("dev.hyperspace:foxy:<version>")
+    implementation(kotlin("script-runtime"))
+}
+```
+
+Create a personal access token with access to `packages`. In your `gradle.properties` file, add the following:
+
+```
+gpr.user=yourGitHubUserName
+gpr.key=yourGitHubToken
+```
+
+Replace `<version>` with the version of Foxy you'd like to download. Run `./gradlew build` to sync your changes and
+download the dependencies.
+
 ### Adding the library
 
 > TBD

@@ -16,26 +16,14 @@ plugins {
     kotlin("multiplatform") version "1.6.20"
     kotlin("plugin.serialization") version "1.6.20"
     id("maven-publish")
+    id("distribution")
 }
 
 group = "dev.hyperspace"
-version = "1.0-SNAPSHOT"
+version = "1.0.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
-}
-
-publishing {
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/hyperspacedev/foxy")
-            credentials {
-                username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
-                password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
-            }
-        }
-    }
 }
 
 kotlin {
@@ -48,13 +36,15 @@ kotlin {
             useJUnitPlatform()
         }
     }
-    js(IR) {
-        browser {
-            commonWebpackConfig {
-                cssSupport.enabled = true
-            }
-        }
-    }
+
+    // TODO: Re-enable this once we figure out how to publish the JS variant.
+//    js(IR) {
+//        browser {
+//            commonWebpackConfig {
+//                cssSupport.enabled = true
+//            }
+//        }
+//    }
 
     tasks.withType<KotlinCompile>().all {
         kotlinOptions {
@@ -62,14 +52,29 @@ kotlin {
         }
     }
 
-    val hostOs = System.getProperty("os.name")
-    val isMingwX64 = hostOs.startsWith("Windows")
-    val nativeTarget = when {
-        hostOs == "Mac OS X" -> macosX64("native")
-        hostOs == "Linux" -> linuxX64("native")
-        isMingwX64 -> mingwX64("native")
-        else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
+    publishing {
+        repositories {
+            maven {
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/hyperspacedev/foxy")
+                credentials {
+                    username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
+                    password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
+                }
+            }
+        }
     }
+
+
+    // TODO: Re-enable this once we figure out how to publish native variants.
+//    val hostOs = System.getProperty("os.name")
+//    val isMingwX64 = hostOs.startsWith("Windows")
+//    val nativeTarget = when {
+//        hostOs == "Mac OS X" -> macosX64("native")
+//        hostOs == "Linux" -> linuxX64("native")
+//        isMingwX64 -> mingwX64("native")
+//        else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
+//    }
 
     sourceSets {
         val commonMain by getting {
@@ -95,15 +100,17 @@ kotlin {
             }
         }
         val jvmTest by getting
-        val jsMain by getting {
-            val ktor_version: String by project
 
-            dependencies {
-                implementation("io.ktor:ktor-client-js:$ktor_version")
-            }
-        }
-        val jsTest by getting
-        val nativeMain by getting
-        val nativeTest by getting
+        // TODO: Re-enable these once we figure out how to publish JS and Native packages.
+//        val jsMain by getting {
+//            val ktor_version: String by project
+//
+//            dependencies {
+//                implementation("io.ktor:ktor-client-js:$ktor_version")
+//            }
+//        }
+//        val jsTest by getting
+//        val nativeMain by getting
+//        val nativeTest by getting
     }
 }
