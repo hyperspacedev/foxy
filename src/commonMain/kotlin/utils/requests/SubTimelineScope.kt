@@ -1,5 +1,5 @@
 /*
- * SubTimelineScopes.kt
+ * SubTimelineScope.kt
  * Copyright (C) 2022 Hyperspace Developers.
  * This file is part of project Foxy.
  *
@@ -13,24 +13,24 @@
 package utils.requests
 
 /** Represents sub-timeline scopes such as conversations, lists and markers */
-sealed class SubTimelineScopes {
+sealed class SubTimelineScope {
 
     /** Shows conversations when id and read are null.
      * Remove a conversation when id is provided and read is null on DELETE
      * Mark a conversation with id on POST
      * */
-    class Conversations(val id: String? = null, val read: String? = "read") : SubTimelineScopes()
+    class Conversations(val id: String? = null, val read: String? = "read") : SubTimelineScope()
 
     /** Show all the user's list or create a list when id is null on GET and POST respectively.
      * Show a single list, update a list or delete a list on GET, PUT and DELETE respectively.
      * */
-    class Lists(val id: String? = null) : SubTimelineScopes()
+    class Lists(val id: String? = null) : SubTimelineScope()
 
     /** Shows accounts in a list, add accounts to a list or remove accounts in a list on
      * GET, POST and DELETE respectively.
      * */
-    class AccountsInList(val id: String) : SubTimelineScopes()
+    class AccountsInList(val id: String) : SubTimelineScope()
 
     /** Get or save a user's position in a timeline on GET and POST respectively.  */
-    object Markers : SubTimelineScopes()
+    object Markers : SubTimelineScope()
 }

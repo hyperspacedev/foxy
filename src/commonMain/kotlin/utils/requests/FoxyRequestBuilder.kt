@@ -102,7 +102,10 @@ class FoxyRequestBuilder(
         endpoint = path
     }
 
-    /** Set the internal class FormBuilder to a private var so Foxy can use it. */
+    /** Pass on form data to the request.
+     *
+     * This should be used if you're passing in Form Data to the request.
+     * */
     fun formData(builder: FormBuilder.() -> Unit) {
         formDataBuilder = builder
     }
@@ -210,18 +213,18 @@ class FoxyRequestBuilder(
         }
     }
 
-    fun subTimelineScopes(scope: SubTimelineScopes) {
+    fun subTimelineScopes(scope: SubTimelineScope) {
         endpoint = when (scope) {
-            is SubTimelineScopes.Conversations ->
+            is SubTimelineScope.Conversations ->
                 if (scope.id != null) {
                     if (scope.read != null) "/api/v1/conversations/${scope.id}/read"
                     else "/api/v1/conversations/${scope.id}"
                 } else "/api/v1/conversations"
-            is SubTimelineScopes.Lists ->
+            is SubTimelineScope.Lists ->
                 if (scope.id != null) "/api/v1/lists/${scope.id}"
                 else "/api/v1/lists"
-            is SubTimelineScopes.AccountsInList -> "/api/v1/lists/${scope.id}/accounts"
-            is SubTimelineScopes.Markers -> "/api/v1/markers"
+            is SubTimelineScope.AccountsInList -> "/api/v1/lists/${scope.id}/accounts"
+            is SubTimelineScope.Markers -> "/api/v1/markers"
         }
     }
 
