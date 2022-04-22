@@ -51,9 +51,6 @@ Start by creating a Foxy application and calling the `startOAuthFlow` method on 
 you'd like to authenticate and authorize with:
 
 ```kotlin
-import dev.hyperspace.foxy.Foxy
-import dev.hyperspace.foxy.utils.FoxyApp
-
 val myApplication = FoxyApp("My Great Mastodon App", "https://mastodon.example")
 
 
@@ -69,8 +66,6 @@ val authUrl = Foxy.startOAuthFlow(
 Alternatively, you can use the `FoxyAuthBuilder` approach:
 
 ```kotlin
-import dev.hyperspace.foxy.Foxy
-
 // The authentication URL is returned here.
 val authUrl = Foxy.startOAuthFlow {
     instance = "mastodon.social"
@@ -109,8 +104,6 @@ redirect the user back to your app afterwards.
 Making a request is as simple as calling `request<T>`:
 
 ```kotlin
-import dev.hyperspace.foxy.Foxy
-
 val response = Foxy.request<Timeline> {
     // Specify a GET request
     method = HttpMethod.Get
