@@ -10,8 +10,6 @@
  * NPL for details.
  */
 
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     kotlin("multiplatform") version "1.6.20"
     kotlin("plugin.serialization") version "1.6.20"
@@ -37,18 +35,11 @@ kotlin {
         }
     }
 
-    // TODO: Re-enable this once we figure out how to publish the JS variant.
-//    js(IR) {
-//        browser {
-//            commonWebpackConfig {
-//                cssSupport.enabled = true
-//            }
-//        }
-//    }
-
-    tasks.withType<KotlinCompile>().all {
-        kotlinOptions {
-            freeCompilerArgs = listOf("-opt-in=kotlin.RequiresOptIn")
+    js(IR) {
+        browser {
+            commonWebpackConfig {
+                cssSupport.enabled = true
+            }
         }
     }
 
@@ -77,6 +68,10 @@ kotlin {
 //    }
 
     sourceSets {
+        all {
+            languageSettings.optIn("kotlin.RequiresOptIn")
+        }
+
         val commonMain by getting {
             val ktor_version: String by project
             dependencies {
@@ -100,16 +95,14 @@ kotlin {
             }
         }
         val jvmTest by getting
+        val jsMain by getting {
+            val ktor_version: String by project
 
-        // TODO: Re-enable these once we figure out how to publish JS and Native packages.
-//        val jsMain by getting {
-//            val ktor_version: String by project
-//
-//            dependencies {
-//                implementation("io.ktor:ktor-client-js:$ktor_version")
-//            }
-//        }
-//        val jsTest by getting
+            dependencies {
+                implementation("io.ktor:ktor-client-js:$ktor_version")
+            }
+        }
+        val jsTest by getting
 //        val nativeMain by getting
 //        val nativeTest by getting
     }
