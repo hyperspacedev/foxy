@@ -79,6 +79,9 @@ val authUrl = Foxy.startOAuthFlow {
 
 ```
 
+> Note: The authentication methods and request method are coroutine functions and should be called in a `suspend` block
+> or with a method that allows calling coroutines.
+
 The authentication URL will be returned in either approach, which can be opened in a web browser to allow an end user to
 sign in and authorize the app you created access to your account. To finish the workflow, call `finishOAuthFlow`,
 specifying how to grant permission, along with the redirect URL that contains the code needed to create the access
