@@ -14,6 +14,7 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
+import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
@@ -225,7 +226,12 @@ object Foxy {
 
     /** Makes a general HTTP request using the domain and access token. */
     @PublishedApi
-    internal suspend fun makeRequest(type: HttpMethod, path: String, params: List<Pair<String, Any?>>): HttpResponse =
+    internal suspend fun makeRequest(
+        type: HttpMethod,
+        path: String,
+        params: List<Pair<String, Any?>>,
+        form: FormBuilder.() -> Unit = {}
+    ): HttpResponse =
         client.request {
             url {
                 protocol = URLProtocol.HTTPS
@@ -236,6 +242,8 @@ object Foxy {
             params.forEach { (name, value) ->
                 parameter(name, value)
             }
+
+            formData(form)
 
             if (session != null)
                 header("Authorization", "Bearer ${session?.token ?: ""}")

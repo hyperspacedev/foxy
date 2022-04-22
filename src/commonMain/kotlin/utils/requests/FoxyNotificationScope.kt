@@ -26,4 +26,11 @@ sealed class FoxyNotificationScope {
 
     /** Dismisses a notification with a specified ID. */
     class Dismiss(val id: String) : FoxyNotificationScope()
+
+    /** Subscribe to push notifications,
+     * Get push subscription,
+     * Change notification type,
+     * or remove subscription on POST, GET, PUT or DELETE respectively
+     * */
+    object Push : FoxyNotificationScope()
 }

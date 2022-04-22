@@ -12,6 +12,7 @@
 
 package utils.requests
 
+import io.ktor.client.request.forms.*
 import io.ktor.http.*
 import utils.aliases.Parameter
 import utils.annotations.Dangerous
@@ -26,11 +27,17 @@ class FoxyRequestBuilder(
     private var endpoint: String = "",
 
     /** A mutable list of the request parameters. */
-    private val params: MutableList<Parameter> = mutableListOf()
+    private val params: MutableList<Parameter> = mutableListOf(),
+
+    /** A form builder to send Form Data */
+    private var formDataBuilder: FormBuilder.() -> Unit = {}
 ) {
 
     /** Returns the endpoint that was requested. */
     fun getEndpoint(): String = endpoint
+
+    /** Returns the form builder */
+    fun getFormBuilder(): FormBuilder.() -> Unit = formDataBuilder
 
     /** Returns a list of the parameters to be passed into the client's request. */
     fun getParams(): List<Parameter> = params.toList()
@@ -55,6 +62,37 @@ class FoxyRequestBuilder(
         }
     }
 
+    /** Sets the endpoint to work with current user's account
+     *
+     * @param scope The personal scope
+     * @see FoxyPersonalScope
+     * */
+    fun personal(scope: FoxyPersonalScope) {
+        endpoint = when (scope) {
+            is FoxyPersonalScope.Bookmarks -> "/api/v1/bookmarks"
+            is FoxyPersonalScope.Favorites -> "/api/v1/favourites"
+            is FoxyPersonalScope.Mutes -> "/api/v1/mutes"
+            is FoxyPersonalScope.Blocks -> "/api/v1/blocks"
+            is FoxyPersonalScope.DomainBlocks -> "/api/v1/domain_blocks"
+            is FoxyPersonalScope.Filters ->
+                if (scope.id != null) "/api/v1/filters/${scope.id}"
+                else "/api/v1/filters"
+            is FoxyPersonalScope.Report -> "/api/v1/reports"
+            is FoxyPersonalScope.Follow ->
+                if (scope.id != null) "/api/v1/follow_requests/${scope.id}/${scope.action}"
+                else "/api/v1/follow_requests"
+            is FoxyPersonalScope.Endorsements -> "api/v1/endorsements"
+            is FoxyPersonalScope.FeaturedTags ->
+                if (scope.id != null) "/api/v1/featured_tags/${scope.id}"
+                else if (scope.suggested != null) "/api/v1/featured_tags/suggestions"
+                else "/api/v1/featured_tags"
+            is FoxyPersonalScope.Preferences -> "/api/v1/preferences"
+            is FoxyPersonalScope.Suggestions ->
+                if (scope.id != null) "/api/v1/suggestions/${scope.id}"
+                else "/api/v1/suggestions"
+        }
+    }
+
     /** Sets the endpoint to a custom string.
      *
      * This should only be used if the existing endpoint methods do not provide the endpoint requested.
@@ -64,16 +102,28 @@ class FoxyRequestBuilder(
         endpoint = path
     }
 
+    /** Pass on form data to the request.
+     *
+     * This should be used if you're passing in Form Data to the request.
+     * */
+    fun formData(builder: FormBuilder.() -> Unit) {
+        formDataBuilder = builder
+    }
+
+
     /** Sets the endpoint to retrieve instance information.
      *
      * @param scope The instance scope endpoint to fetch.
      * @See FoxyInstanceScope
      * */
     fun instance(scope: FoxyInstanceScope) {
-        endpoint = "/api/v1/instance" + when (scope) {
-            is FoxyInstanceScope.Instance -> ""
-            is FoxyInstanceScope.Peers -> "/peers"
-            is FoxyInstanceScope.Activity -> "/activity"
+        endpoint = when (scope) {
+            is FoxyInstanceScope.Instance -> "/api/v1/instance"
+            is FoxyInstanceScope.Peers -> "/api/v1/instance/peers"
+            is FoxyInstanceScope.Activity -> "/api/v1/instance/activity"
+            is FoxyInstanceScope.Trends -> "/api/v1/trends"
+            is FoxyInstanceScope.Directory -> "/api/v1/directory"
+            is FoxyInstanceScope.CustomEmojis -> "/api/v1/custom_emojis"
         }
     }
 
@@ -84,11 +134,12 @@ class FoxyRequestBuilder(
      * @see FoxyNotificationScope
      */
     fun notification(scope: FoxyNotificationScope) {
-        endpoint = "/api/v1/notifications" + when (scope) {
-            is FoxyNotificationScope.All -> ""
-            is FoxyNotificationScope.Notification -> "/${scope.id}"
-            is FoxyNotificationScope.Clear -> "/clear"
-            is FoxyNotificationScope.Dismiss -> "/${scope.id}/dismiss"
+        endpoint = when (scope) {
+            is FoxyNotificationScope.All -> "/api/v1/notifications"
+            is FoxyNotificationScope.Notification -> "/api/v1/notifications/${scope.id}"
+            is FoxyNotificationScope.Clear -> "/api/v1/notifications/clear"
+            is FoxyNotificationScope.Dismiss -> "/api/v1/notifications/${scope.id}/dismiss"
+            is FoxyNotificationScope.Push -> "/api/v1/push/subscription"
         }
     }
 
@@ -144,10 +195,43 @@ class FoxyRequestBuilder(
         }
     }
 
+    /** Sets the endpoints to work with attachments in a status
+     * @param scope The attachment scope to work with
+     * @see FoxyAttachmentScope
+     * */
+    fun attachment(scope: FoxyAttachmentScope) {
+        endpoint = when (scope) {
+            is FoxyAttachmentScope.Media ->
+                if (scope.id != null) "/api/v1/media/${scope.id}"
+                else "api/v2/media"
+            is FoxyAttachmentScope.Polls ->
+                if (scope.vote != null) "/api/v1/polls/${scope.vote}/votes"
+                else "/api/v1/polls/${scope.id}"
+            is FoxyAttachmentScope.Scheduled ->
+                if (scope.id != null) "/api/v1/scheduled_statuses/${scope.id}"
+                else "/api/v1/scheduled_statuses"
+        }
+    }
+
+    fun subTimelineScopes(scope: SubTimelineScope) {
+        endpoint = when (scope) {
+            is SubTimelineScope.Conversations ->
+                if (scope.id != null) {
+                    if (scope.read != null) "/api/v1/conversations/${scope.id}/read"
+                    else "/api/v1/conversations/${scope.id}"
+                } else "/api/v1/conversations"
+            is SubTimelineScope.Lists ->
+                if (scope.id != null) "/api/v1/lists/${scope.id}"
+                else "/api/v1/lists"
+            is SubTimelineScope.AccountsInList -> "/api/v1/lists/${scope.id}/accounts"
+            is SubTimelineScope.Markers -> "/api/v1/markers"
+        }
+    }
+
     /***
      * Sets the end point to search for content in accounts, statuses, and hashtags
      */
-    fun search(){
+    fun search() {
         endpoint = "/api/v2/search"
     }
 

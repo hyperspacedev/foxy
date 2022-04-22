@@ -23,4 +23,13 @@ sealed class FoxyInstanceScope {
 
     /** Retrieves an activity stream from the instance. */
     object Activity : FoxyInstanceScope()
+
+    /** View hashtags that are currently being used more frequently than usual. */
+    object Trends : FoxyInstanceScope()
+
+    /** A directory of profiles that a website is aware of */
+    object Directory : FoxyInstanceScope()
+
+    /** Each site can define and upload its own custom emoji to be attached to profiles or statuses. */
+    object CustomEmojis : FoxyInstanceScope()
 }
