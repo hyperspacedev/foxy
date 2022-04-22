@@ -38,10 +38,6 @@ gpr.key=yourGitHubToken
 Replace `<version>` with the version of Foxy you'd like to download. Run `./gradlew build` to sync your changes and
 download the dependencies.
 
-### Adding the library
-
-> TBD
-
 ### Starting an authentication flow
 
 Before you can make authenticated requests, you must first obtain an access token from the end user or client
