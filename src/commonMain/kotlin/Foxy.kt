@@ -31,6 +31,7 @@ import utils.FoxyApp
 import utils.FoxyAuthBuilder
 import utils.requests.FoxyRequestBuilder
 import utils.responses.MastodonResponse
+import utils.tokenStorageGet
 import utils.tokenStorageWrite
 import kotlin.native.concurrent.ThreadLocal
 import kotlin.time.Duration.Companion.days
@@ -72,6 +73,18 @@ object Foxy {
                 explicitNulls = true
             })
         }
+    }
+
+    /** Look for an existing validated session and validate its integrity.
+     * @return Whether the existing session was valid.
+     */
+    fun authenticateExistingSession(): Boolean {
+        val (token, date, integrity, _) = tokenStorageGet().split(";")
+        val tempSession = ValidatedSession(token, date, integrity)
+        if (!tempSession.validateIntegrity(14.days.inWholeSeconds, Clock.System.now().toString()))
+            return false
+        session = tempSession
+        return true
     }
 
     /** Make an HTTP request to the Mastodon server.
