@@ -10,13 +10,13 @@
  * NPL for details.
  */
 
+import dev.hyperspace.foxy.models.Account
+import dev.hyperspace.foxy.models.Status
+import dev.hyperspace.foxy.utils.requests.FoxyStatusScope
+import dev.hyperspace.foxy.utils.responses.MastodonResponse
+import dev.hyperspace.foxy.utils.responses.hoistEntityOrNull
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
-import models.Account
-import models.Status
-import utils.requests.FoxyStatusScope
-import utils.responses.MastodonResponse
-import utils.responses.hoistEntityOrNull
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull

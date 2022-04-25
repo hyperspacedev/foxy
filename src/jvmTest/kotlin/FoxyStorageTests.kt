@@ -10,9 +10,9 @@
  * NPL for details.
  */
 
-import security.ValidatedSession
-import utils.tokenStorageGet
-import utils.tokenStorageWrite
+import dev.hyperspace.foxy.security.ValidatedSession
+import dev.hyperspace.foxy.utils.tokenStorageGet
+import dev.hyperspace.foxy.utils.tokenStorageWrite
 import kotlin.test.Test
 
 class FoxyStorageTests {

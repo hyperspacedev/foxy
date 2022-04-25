@@ -10,12 +10,12 @@
  * NPL for details.
  */
 
+import dev.hyperspace.foxy.utils.aliases.Timeline
+import dev.hyperspace.foxy.utils.requests.FoxyTimelineScope
+import dev.hyperspace.foxy.utils.responses.MastodonResponse
+import dev.hyperspace.foxy.utils.responses.hoistEntityOrNull
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
-import utils.aliases.Timeline
-import utils.requests.FoxyTimelineScope
-import utils.responses.MastodonResponse
-import utils.responses.hoistEntityOrNull
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue

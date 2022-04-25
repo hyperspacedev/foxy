@@ -10,8 +10,8 @@
  * NPL for details.
  */
 
+import dev.hyperspace.foxy.utils.FoxyApp
 import kotlinx.coroutines.runBlocking
-import utils.FoxyApp
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue

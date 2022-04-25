@@ -47,6 +47,8 @@ Start by creating a Foxy application and calling the `startOAuthFlow` method on 
 you'd like to authenticate and authorize with:
 
 ```kotlin
+import dev.hyperspace.foxy.*
+
 val myApplication = FoxyApp("My Great Mastodon App", "https://mastodon.example")
 
 
@@ -62,6 +64,8 @@ val authUrl = Foxy.startOAuthFlow(
 Alternatively, you can use the `FoxyAuthBuilder` approach:
 
 ```kotlin
+import dev.hyperspace.foxy.*
+
 // The authentication URL is returned here.
 val authUrl = Foxy.startOAuthFlow {
     instance = "mastodon.social"
@@ -88,6 +92,8 @@ specifying how to grant permission, along with the redirect URL that contains th
 token:
 
 ```kotlin
+import dev.hyperspace.foxy.*
+
 // We don't want user-level access in this example, so ClientCredentials will do.
 Foxy.finishOAuthFlow(Foxy.AuthGrantType.ClientCredentials)
 ```
@@ -103,6 +109,8 @@ redirect the user back to your app afterwards.
 Making a request is as simple as calling `request<T>`:
 
 ```kotlin
+import dev.hyperspace.foxy.*
+
 val response = Foxy.request<Timeline> {
     // Specify a GET request
     method = HttpMethod.Get
@@ -119,6 +127,8 @@ The return type is a `MastodonResponse`, a sealed class which handles errors for
 user of any potential errors from the request.
 
 ```kotlin
+import dev.hyperspace.foxy.*
+
 when (response) {
 
     // The success event includes the entity with the specified type.
@@ -138,6 +148,8 @@ which fetches common information such as the current user and the instance they 
 endpoint, you can declare it, provided that you opt in to the `Dangerous` annotation:
 
 ```kotlin
+import dev.hyperspace.foxy.*
+
 // The Dangerous annotation requires opt-in to acknowledge that you are aware of the unintended side effects of using
 // the method in question.
 @OptIn(Dangerous::class)

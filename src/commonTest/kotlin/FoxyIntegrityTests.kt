@@ -10,7 +10,7 @@
  * NPL for details.
  */
 
-import security.ValidatedSession
+import dev.hyperspace.foxy.security.ValidatedSession
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
