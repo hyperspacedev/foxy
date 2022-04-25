@@ -10,6 +10,7 @@
  * NPL for details.
  */
 
+import dev.hyperspace.foxy.Foxy
 import dev.hyperspace.foxy.models.Account
 import dev.hyperspace.foxy.models.Status
 import dev.hyperspace.foxy.utils.requests.FoxyStatusScope

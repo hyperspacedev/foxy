@@ -10,6 +10,7 @@
  * NPL for details.
  */
 
+import dev.hyperspace.foxy.Foxy
 import dev.hyperspace.foxy.utils.FoxyApp
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test

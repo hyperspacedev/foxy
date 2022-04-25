@@ -10,6 +10,7 @@
  * NPL for details.
  */
 
+import dev.hyperspace.foxy.Foxy
 import dev.hyperspace.foxy.models.Account
 import dev.hyperspace.foxy.models.Activity
 import dev.hyperspace.foxy.models.Instance

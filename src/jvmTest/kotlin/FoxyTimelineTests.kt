@@ -10,6 +10,7 @@
  * NPL for details.
  */
 
+import dev.hyperspace.foxy.Foxy
 import dev.hyperspace.foxy.utils.aliases.Timeline
 import dev.hyperspace.foxy.utils.requests.FoxyTimelineScope
 import dev.hyperspace.foxy.utils.responses.MastodonResponse
