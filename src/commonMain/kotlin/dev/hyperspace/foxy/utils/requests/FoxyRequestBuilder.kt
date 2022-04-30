@@ -49,8 +49,8 @@ class FoxyRequestBuilder(
      */
     fun account(scope: FoxyAccountScope) {
         endpoint = when (scope) {
-            is FoxyAccountScope.CurrentUser -> "/api/v1/verify_credentials"
-            is FoxyAccountScope.UpdateCurrentUser -> "/api/v1/update_credentials"
+            is FoxyAccountScope.CurrentUser -> "/api/v1/accounts/verify_credentials"
+            is FoxyAccountScope.UpdateCurrentUser -> "/api/v1/accounts/update_credentials"
             is FoxyAccountScope.Register -> "/api/v1/accounts"
             is FoxyAccountScope.Relationships -> "/api/v1/accounts/relationships"
             is FoxyAccountScope.Search -> "/api/v1/accounts/search"

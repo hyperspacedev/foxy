@@ -46,7 +46,7 @@ object Foxy {
     private var domain: String = "mastodon.social"
 
     /** The list of scopes that the client will have control over. */
-    private val defaultScopes: MutableList<String> = mutableListOf("read", "write", "follow")
+    private val defaultScopes: MutableList<String> = mutableListOf("read")
 
     /** The application entity created during authorization. */
     private var appEntity: Application? = null
@@ -54,6 +54,7 @@ object Foxy {
     /** The client's current session with the access token. */
     private var session: ValidatedSession? = null
 
+    /** The list of scopes for this client. */
     private var scopes: MutableList<String> = mutableListOf()
 
     /** A sealed class that represents the authorization grant types. */
@@ -168,6 +169,8 @@ object Foxy {
 
     /** Finishes authorization process by retrieving the access code to create the token and storing it securely.
      * @param grant The level of access the app will have.
+     * @return If an error occurred when generating the access token, a response with that error will be returned.
+     * Otherwise, null is returned if the access token generation was successful.
      */
     suspend fun finishOAuthFlow(grant: AuthGrantType): MastodonResponse.Error? {
         val fapEntity = appEntity ?: return null
