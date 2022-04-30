@@ -55,7 +55,7 @@ object Foxy {
     private var session: ValidatedSession? = null
 
     /** The list of scopes for this client. */
-    private var scopes: MutableList<String> = mutableListOf()
+    private var scopes: MutableSet<String> = mutableSetOf("read")
 
     /** A sealed class that represents the authorization grant types. */
     sealed class AuthGrantType {
@@ -129,13 +129,13 @@ object Foxy {
         redirectUri: String,
         customScopes: List<String>? = null
     ): String {
+        if (customScopes != null)
+            scopes = customScopes.toMutableSet()
+
         val fapEntity = registerApplication(domain, app.name, redirectUri, app.website)
             .body<Application>()
 
         appEntity = fapEntity
-
-        if (customScopes != null)
-            scopes = customScopes.toMutableList()
 
         val benjamin = customScopes?.joinToString("%20") ?: defaultScopes.joinToString("%20")
 
@@ -295,7 +295,7 @@ object Foxy {
             listOf(
                 Pair("client_name", clientName),
                 Pair("redirect_uris", redirectUri),
-                Pair("scopes", defaultScopes.joinToString(" ")),
+                Pair("scopes", scopes.joinToString(" ")),
                 Pair("website", website ?: "")
             )
         )
