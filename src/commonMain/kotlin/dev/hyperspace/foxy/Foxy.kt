@@ -169,10 +169,10 @@ object Foxy {
     /** Finishes authorization process by retrieving the access code to create the token and storing it securely.
      * @param grant The level of access the app will have.
      */
-    suspend fun finishOAuthFlow(grant: AuthGrantType) {
-        val fapEntity = appEntity ?: return
+    suspend fun finishOAuthFlow(grant: AuthGrantType): MastodonResponse.Error? {
+        val fapEntity = appEntity ?: return null
 
-        val tokenEntity = makeRequest(
+        val tokenResponse = makeRequest(
             HttpMethod.Post, "/oauth/token",
             buildList {
                 addAll(
@@ -180,7 +180,7 @@ object Foxy {
                         Pair(
                             "grant_type", when (grant) {
                                 is AuthGrantType.ClientCredentials -> "client_credentials"
-                                is AuthGrantType.AuthorizationCode -> "code"
+                                is AuthGrantType.AuthorizationCode -> "authorization_code"
                             }
                         ),
                         Pair("client_id", fapEntity.clientId),
@@ -199,12 +199,17 @@ object Foxy {
                     }
                 }
             }
-        ).body<Token>()
+        )
+
+        if (tokenResponse.status != HttpStatusCode.OK)
+            return MastodonResponse.Error(tokenResponse.body())
+
+        val token = tokenResponse.body<Token>()
 
         session =
             ValidatedSession(
-                tokenEntity.accessToken,
-                Instant.fromEpochSeconds(tokenEntity.createdAt.toLong())
+                token.accessToken,
+                Instant.fromEpochSeconds(token.createdAt.toLong())
                     .toString()
             )
         //FIXME: A user should be able to change the lifespan of their token but the default should be 2 weeks.
@@ -223,6 +228,8 @@ object Foxy {
                 getRefreshToken(grant)
             ).joinToString(";")
         )
+
+        return null
     }
 
     private fun getRefreshToken(grant: AuthGrantType): String {
