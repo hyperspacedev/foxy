@@ -231,7 +231,8 @@ object Foxy {
     private fun MutableList<Pair<String, Any?>>.addAuthCodeToTokenRequest(grant: AuthGrantType.AuthorizationCode) {
         val authorizationCode = grant.authCodeUrl.split("code")
         val redirectUri =
-            if (authorizationCode.count() > 1) authorizationCode[0].removeSuffix("?")
+            if (authorizationCode.count() > 1 && authorizationCode[0].isNotEmpty())
+                authorizationCode[0].removeSuffix("?")
             else "urn:ietf:wg:oauth:2.0:oob"
         add(Pair("code", authorizationCode[1].removePrefix("=")))
         add(Pair("redirect_uri", redirectUri))
