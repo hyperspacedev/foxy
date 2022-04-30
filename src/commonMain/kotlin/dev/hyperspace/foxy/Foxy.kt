@@ -46,13 +46,15 @@ object Foxy {
     private var domain: String = "mastodon.social"
 
     /** The list of scopes that the client will have control over. */
-    private val scopes: MutableList<String> = mutableListOf("read", "write", "follow")
+    private val defaultScopes: MutableList<String> = mutableListOf("read", "write", "follow")
 
     /** The application entity created during authorization. */
     private var appEntity: Application? = null
 
     /** The client's current session with the access token. */
     private var session: ValidatedSession? = null
+
+    private var scopes: MutableList<String> = mutableListOf()
 
     /** A sealed class that represents the authorization grant types. */
     sealed class AuthGrantType {
@@ -131,7 +133,10 @@ object Foxy {
 
         appEntity = fapEntity
 
-        val benjamin = customScopes?.joinToString("%20") ?: scopes.joinToString("%20")
+        if (customScopes != null)
+            scopes = customScopes.toMutableList()
+
+        val benjamin = customScopes?.joinToString("%20") ?: defaultScopes.joinToString("%20")
 
         val components = listOf(
             "https://$domain/oauth/authorize",
@@ -180,6 +185,7 @@ object Foxy {
                         ),
                         Pair("client_id", fapEntity.clientId),
                         Pair("client_secret", fapEntity.clientSecret),
+                        Pair("scope", scopes.joinToString("%20"))
                     )
                 )
 
@@ -279,7 +285,7 @@ object Foxy {
             listOf(
                 Pair("client_name", clientName),
                 Pair("redirect_uris", redirectUri),
-                Pair("scopes", scopes.joinToString(" ")),
+                Pair("scopes", defaultScopes.joinToString(" ")),
                 Pair("website", website ?: "")
             )
         )
