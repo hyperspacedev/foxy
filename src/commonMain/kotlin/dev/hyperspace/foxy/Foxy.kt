@@ -185,7 +185,7 @@ object Foxy {
                         ),
                         Pair("client_id", fapEntity.clientId),
                         Pair("client_secret", fapEntity.clientSecret),
-                        Pair("scope", scopes.joinToString("%20"))
+                        Pair("scope", scopes.joinToString(" "))
                     )
                 )
 
