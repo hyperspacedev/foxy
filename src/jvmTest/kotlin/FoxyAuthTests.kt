@@ -52,4 +52,5 @@ class FoxyAuthTests {
             Foxy.finishOAuthFlow(Foxy.AuthGrantType.ClientCredentials)
         }
     }
+    
 }

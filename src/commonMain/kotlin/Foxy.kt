@@ -79,7 +79,9 @@ object Foxy {
      * @return Whether the existing session was valid.
      */
     fun authenticateExistingSession(): Boolean {
-        val (token, date, integrity, _) = tokenStorageGet().split(";")
+        val storedToken = tokenStorageGet()
+        if (storedToken == "") return false
+        val (token, date, integrity, _) = storedToken.split(";")
         val tempSession = ValidatedSession(token, date, integrity)
         if (!tempSession.validateIntegrity(14.days.inWholeSeconds, Clock.System.now().toString()))
             return false

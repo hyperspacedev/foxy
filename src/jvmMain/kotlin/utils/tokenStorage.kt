@@ -13,6 +13,7 @@
 package utils
 
 import java.io.File
+import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
 
@@ -34,9 +35,12 @@ actual fun tokenStorageWrite(data: String) {
 
 actual fun tokenStorageGet(): String {
 
-    val fileContent = Files.readAllLines(Path.of(getAbsolutePath()))
-
-    return fileContent[2]
+    try {
+        val fileContent = Files.readAllLines(Path.of(getAbsolutePath()))
+        return fileContent[2]
+    } catch (e: IOException) {
+        return ""
+    }
 }
 
 fun getAbsolutePath(): String {
